@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Lese-/Schreib-Smoke-Test gegen MyFitnessPal über die Bibliotheken von mfp-mcp.
 
-Aufruf (Windows, PowerShell, im Repo-Ordner):
+Aufruf (Windows, PowerShell, im Repo-Ordner; --python 3.12, weil lxml 5.x keine Pakete fuer 3.14 hat):
 
-    uv run --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py             # nur lesen
-    uv run --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py --write     # Banane 120 g rein und wieder raus
-    uv run --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py --custom-food
+    uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py             # nur lesen
+    uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py --write     # Banane 120 g rein und wieder raus
+    uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts\\mfp_smoke_test.py --custom-food
 
 Das Cookie kommt aus MFP_COOKIE oder aus der Datei, die `uvx mfp-mcp auth`
 geschrieben hat. Jeder Schritt meldet OK oder FEHLER mit Endpunkt und
@@ -23,7 +23,7 @@ try:
     from myfitnesspal_mcp import auth, config, diary, mfp_client
 except ImportError:
     sys.exit(
-        "mfp-mcp fehlt. Aufruf über: uv run --with mfp-mcp==0.3.0 python scripts/mfp_smoke_test.py"
+        "mfp-mcp fehlt. Aufruf über: uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_smoke_test.py"
     )
 
 WEB = "https://www.myfitnesspal.com"

@@ -34,7 +34,7 @@ den GitHub-Issues der beiden Kandidaten; Live-Tests gegen MFP stehen noch aus
   Abschnitt 4).
 
 Installation und Start wurden am 2026-09-16 in einer Linux-Umgebung geprüft:
-`uvx mfp-mcp --help` läuft in 2,5 s, `claude mcp add --scope user myfitnesspal
+`uvx --python 3.12 mfp-mcp --help` läuft in 2,5 s, `claude mcp add --scope user myfitnesspal
 -- uvx mfp-mcp` registriert den Server, ein MCP-Client über stdio sieht alle
 12 Werkzeuge, und ohne Cookie antwortet `fitness_get_day` mit einer klaren
 Meldung („session expired or not connected"). Live-Aufrufe gegen MFP brauchen
@@ -95,7 +95,7 @@ interpretiert. Für deutsche Etiketten `country_code="DE"` und Netto-KH senden.
   (platformdirs). Das Setup-Skript beschränkt die Datei per `icacls` auf den
   eigenen Benutzer, weil `chmod 600` unter Windows wirkungslos ist.
 - Abgelaufen: Werkzeuge antworten mit „session expired or not connected".
-  Dann erneut in Chrome einloggen, Cookie kopieren, `uvx mfp-mcp auth`
+  Dann erneut in Chrome einloggen, Cookie kopieren, `uvx --python 3.12 mfp-mcp auth`
   ausführen. Alternativ `uvx --from 'mfp-mcp[autorefresh]' mfp-mcp auth`, dann
   rotiert ein headless Chromium das Token selbst.
 

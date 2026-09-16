@@ -117,7 +117,7 @@ richtigen Mahlzeit stehen. Ausgeben:
 
 | Meldung | Bedeutung, Aktion |
 | --- | --- |
-| `session expired or not connected` | Cookie abgelaufen (≈ 30 Tage). Benutzer bitten: in Chrome einloggen, Cookie kopieren, `uvx mfp-mcp auth`. Nichts weiter versuchen. |
+| `session expired or not connected` | Cookie abgelaufen (≈ 30 Tage). Benutzer bitten: in Chrome einloggen, Cookie kopieren, `uvx --python 3.12 mfp-mcp auth`. Nichts weiter versuchen. |
 | `403` / Cloudflare | `MFP_IMPERSONATE=chrome124` in der MCP-Konfiguration setzen, VPN aus. |
 | Suche liefert 0 Treffer für alles | MFP hat die Suchseite geändert; auf `docs/mfp-tools.md` im Repo `MarqEwi/MyFitnessPal` verweisen, nichts loggen. |
 | `couldn't read your MyFitnessPal profile` | `MFP_USERNAME=MarqEwi` fehlt in der Server-Konfiguration. |
