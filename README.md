@@ -43,7 +43,7 @@ Daraus folgen diese Schutzregeln, die Skill und Smoke-Test einhalten:
 ```powershell
 # PowerShell ohne Adminrechte, im eigenen Benutzerordner
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # einmalig, gibt lokale Skripte frei
-cd $env:USERPROFILE\MyFitnessPal
+cd C:\dev\MyFitnessPal
 .\scripts\setup-mfp-mcp.ps1
 ```
 

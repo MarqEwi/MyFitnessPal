@@ -25,14 +25,22 @@ prüft jeden einzeln. Die manuelle Variante steht hier zum Nachvollziehen.
   powershell -ExecutionPolicy Bypass -File .\scripts\setup-mfp-mcp.ps1
   ```
 
-- Repo in den eigenen Benutzerordner klonen:
+- Repo in einen eigenen Arbeitsordner klonen. `C:\dev` ist bewusst
+  außerhalb des Benutzerprofils: Dort blockiert der „Überwachte
+  Ordnerzugriff" von Windows Defender (Ransomware-Schutz) `git.exe` gern mit
+  `could not create work tree dir ... Permission denied`.
 
   ```powershell
-  cd $env:USERPROFILE
+  New-Item -ItemType Directory -Force C:\dev | Out-Null
+  cd C:\dev
   git clone https://github.com/MarqEwi/MyFitnessPal
   cd MyFitnessPal
   git checkout claude/festive-mccarthy-x1f2gt
   ```
+
+  Kommt der Fehler auch dort: Windows-Sicherheit → Viren- & Bedrohungsschutz
+  → Ransomware-Schutz → Überwachter Ordnerzugriff → Blockierungsverlauf
+  prüfen und `git.exe` zulassen.
 
 ## Schritt 1: Python 3.10+ und uv prüfen
 
