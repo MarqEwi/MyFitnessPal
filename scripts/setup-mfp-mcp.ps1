@@ -18,6 +18,21 @@ function Step($n, $text) { Write-Host "`n== Schritt $n : $text ==" -ForegroundCo
 function Ok($text)   { Write-Host "  [OK] $text" -ForegroundColor Green }
 function Fail($text) { Write-Host "  [FEHLER] $text" -ForegroundColor Red; exit 1 }
 
+# ---------------------------------------------------------------- 0. Schreibrecht im Profil
+Step 0 "Schreibrecht im Benutzerprofil pruefen"
+$probe = Join-Path $env:USERPROFILE ".mfp-setup-probe"
+try {
+    New-Item -ItemType Directory -Force $probe -ErrorAction Stop | Out-Null
+    Remove-Item $probe -Force
+    Ok "Ordner in $env:USERPROFILE koennen angelegt werden"
+} catch {
+    Write-Host "  In $env:USERPROFILE koennen keine Ordner angelegt werden: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "  Claude Code braucht dort .claude, der Installer .cache und .local." -ForegroundColor Red
+    Write-Host "  Reparatur als Administrator:  icacls $env:USERPROFILE /grant `"$($env:USERNAME):(OI)(CI)F`" /T /C" -ForegroundColor Yellow
+    Write-Host "  Oder Windows-Sicherheit -> Ransomware-Schutz -> Ueberwachter Ordnerzugriff -> Blockierungsverlauf pruefen." -ForegroundColor Yellow
+    Fail "Schreibrecht im Benutzerprofil fehlt"
+}
+
 # ---------------------------------------------------------------- 1. Python + uv
 Step 1 "Python 3.10+ und uv pruefen"
 $py = $null

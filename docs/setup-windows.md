@@ -42,6 +42,19 @@ prüft jeden einzeln. Die manuelle Variante steht hier zum Nachvollziehen.
   → Ransomware-Schutz → Überwachter Ordnerzugriff → Blockierungsverlauf
   prüfen und `git.exe` zulassen.
 
+- Schreibrecht im eigenen Profil prüfen. Git, der Claude-Installer und
+  Claude Code selbst legen Ordner direkt unter `C:\Users\<Name>` an
+  (`.cache`, `.local`, `.claude`). Schlägt
+
+  ```powershell
+  New-Item -ItemType Directory "$env:USERPROFILE\test-ordner"
+  ```
+
+  fehl, dann als Administrator `icacls C:\Users\<Name> /grant "<Name>:(OI)(CI)F" /T /C`
+  ausführen oder in Windows-Sicherheit den überwachten Ordnerzugriff für
+  `git.exe` und den Installer freigeben. Meldung des Installers in diesem
+  Fall: `EPERM: operation not permitted, mkdir 'C:\Users\<Name>\.cache'`.
+
 ## Schritt 1: Python 3.10+ und uv prüfen
 
 ```powershell
