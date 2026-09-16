@@ -105,7 +105,7 @@ def step_read(client, today: date):
             report(f"Tagebuch {day.isoformat()} lesen", False, f"GET {WEB}/food/diary/...: {exc}")
     if names:
         print(f"\nMahlzeiten-Namen im Konto (Reihenfolge = meal_id 0..{len(names) - 1}): {names}")
-        print("-> in skills/mahlzeit/SKILL.md, Abschnitt 'Mahlzeiten-Zuordnung' eintragen.")
+        print("-> in .claude/skills/mahlzeit/SKILL.md, Abschnitt 'Mahlzeiten-Zuordnung' eintragen.")
 
 
 def gram_candidate(candidates: list[dict], grams: float) -> tuple[dict, float] | None:

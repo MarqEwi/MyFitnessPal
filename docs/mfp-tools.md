@@ -90,7 +90,9 @@ interpretiert. Für deutsche Etiketten `country_code="DE"` und Netto-KH senden.
 - Gültigkeit: etwa 30 Tage ab letztem Login; jede Nutzung im Browser
   verlängert die Browser-Session, das kopierte Token läuft aber zum
   ursprünglichen Ablaufdatum aus.
-- Ablage durch `mfp-mcp auth`: `%LOCALAPPDATA%\myfitnesspal-mcp\myfitnesspal-mcp\cookies.json`
+- Ablage in der Cloud: Umgebungsvariable `MFP_COOKIE` der Claude-Code-Umgebung,
+  von `.mcp.json` an den Server durchgereicht (siehe `docs/setup-cloud.md`).
+- Ablage auf dem PC durch `mfp-mcp auth`: `%LOCALAPPDATA%\myfitnesspal-mcp\myfitnesspal-mcp\cookies.json`
   (platformdirs). Das Setup-Skript beschränkt die Datei per `icacls` auf den
   eigenen Benutzer, weil `chmod 600` unter Windows wirkungslos ist.
 - Abgelaufen: Werkzeuge antworten mit „session expired or not connected".

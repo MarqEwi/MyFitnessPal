@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "myfitnesspal": {
+      "command": "uvx",
+      "args": ["--python", "3.12", "mfp-mcp"],
+      "env": {
+        "MFP_USERNAME": "MarqEwi",
+        "MFP_COOKIE": "${MFP_COOKIE:-}"
+      }
+    }
+  }
+}

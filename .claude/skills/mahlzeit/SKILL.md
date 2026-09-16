@@ -8,7 +8,10 @@ description: Mahlzeit per Text erfassen, Kalorien und Makros über die MyFitness
 Eingabe: `$ARGUMENTS` (Freitext, deutsch, metrische Einheiten).
 Konto: MyFitnessPal-Benutzer `MarqEwi`. Werkzeuge: MCP-Server `myfitnesspal`
 (`fitness_search_food`, `fitness_log_food`, `fitness_get_day`,
-`fitness_delete_food`).
+`fitness_delete_food`). Der Server läuft in der Cloud-Sitzung (Cookie aus
+`MFP_COOKIE`) genauso wie auf dem PC; die Skill verhält sich überall gleich.
+Einträge erscheinen im Tagebuch als „Marke - Name, Menge Einheit", z. B.
+„Obst - Banane, 120.0 gram".
 
 Antworte auf Deutsch, knapp, mit Tabellen. Schreibe **nie** ins Tagebuch,
 bevor der Benutzer die berechnete Tabelle freigegeben hat.
@@ -25,7 +28,7 @@ Reihenfolge des Kontos.
 | Frühstück, morgens | `breakfast` | _TODO: 1. Mahlzeit_ |
 | Mittag, Mittagessen | `lunch` | _TODO: 2. Mahlzeit_ |
 | Abend, Abendessen | `dinner` | _TODO: 3. Mahlzeit_ |
-| Snack, Snacks, Zwischenmahlzeit | `snacks` | _TODO: 4. Mahlzeit_ |
+| Snack, Snacks, Zwischenmahlzeit | `snacks` | Snacks (bestätigt 2026-09-16) |
 
 Fehlt die Mahlzeit im Text, aus der lokalen Uhrzeit ableiten und im Ergebnis
 nennen: bis 10:30 Frühstück, 10:30 bis 14:30 Mittag, 14:30 bis 17:30 Snack,

@@ -158,7 +158,7 @@ Entfernen: `claude mcp remove myfitnesspal -s user`.
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\mahlzeit" | Out-Null
-Copy-Item skills\mahlzeit\SKILL.md "$env:USERPROFILE\.claude\skills\mahlzeit\SKILL.md" -Force
+Copy-Item .claude\skills\mahlzeit\SKILL.md "$env:USERPROFILE\.claude\.claude\skills\mahlzeit\SKILL.md" -Force
 ```
 
 In einer neuen Claude-Code-Sitzung ist `/mahlzeit` dann verfügbar.
@@ -173,7 +173,7 @@ uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts\mfp_smoke_test.py
 
 zeigt Tagebuch heute und gestern mit Einträgen pro Mahlzeit, Tagessummen
 (kcal, Eiweiß, KH, Fett) und die **tatsächlichen Mahlzeitnamen** des Kontos.
-Diese Namen in `skills/mahlzeit/SKILL.md` (Abschnitt „Mahlzeiten-Zuordnung")
+Diese Namen in `.claude/skills/mahlzeit/SKILL.md` (Abschnitt „Mahlzeiten-Zuordnung")
 eintragen und die Skill erneut kopieren.
 
 Variante B, in Claude Code:

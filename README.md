@@ -10,7 +10,9 @@ beschreiben:
 | Schritt-für-Schritt-Einrichtung unter Windows inkl. Cookie | [`docs/setup-windows.md`](docs/setup-windows.md) |
 | PowerShell-Skript, das die Einrichtung ausführt und prüft | [`scripts/setup-mfp-mcp.ps1`](scripts/setup-mfp-mcp.ps1) |
 | Lese-/Schreib-Smoke-Test (Tagebuch, Banane, eigenes Lebensmittel) | [`scripts/mfp_smoke_test.py`](scripts/mfp_smoke_test.py) |
-| Claude-Code-Skill `/mahlzeit` | [`skills/mahlzeit/SKILL.md`](skills/mahlzeit/SKILL.md) |
+| Claude-Code-Skill `/mahlzeit` (Projekt-Skill, gilt in Cloud und PC) | [`.claude/skills/mahlzeit/SKILL.md`](.claude/skills/mahlzeit/SKILL.md) |
+| MCP-Server für jede Sitzung in diesem Repo | [`.mcp.json`](.mcp.json) |
+| Einrichtung für Handy und Cloud, ohne PC | [`docs/setup-cloud.md`](docs/setup-cloud.md) |
 
 ## Risiken in drei Sätzen
 
@@ -35,8 +37,10 @@ Daraus folgen diese Schutzregeln, die Skill und Smoke-Test einhalten:
 - Keine Massen-Schreibvorgänge, keine Schleifen, kein automatischer Retry auf
   einen Schreib-Endpunkt; ein fehlgeschlagener Eintrag wird gemeldet, nicht
   wiederholt.
-- Das Session-Cookie bleibt ausschließlich auf dem Windows-Rechner und wird
-  nie in Chat, Repo oder Cloud-Sitzung eingefügt.
+- Das Session-Cookie liegt auf dem Windows-Rechner (`cookies.json`) und, auf
+  ausdrücklichen Wunsch des Kontoinhabers, als Umgebungsvariable `MFP_COOKIE`
+  in der Claude-Code-Cloud-Umgebung (siehe `docs/setup-cloud.md`). Es wird
+  nie ins Repo oder in Chat-Nachrichten geschrieben.
 
 ## Kurzfassung der Einrichtung
 

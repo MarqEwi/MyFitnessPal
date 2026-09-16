@@ -11,11 +11,17 @@ Neue Ordner und Klone auf dem PC des Benutzers immer unter
 
 - MyFitnessPal-Hauptkonto `MarqEwi`; Schreibvorgänge nur nach Freigabe,
   Testeinträge im selben Lauf wieder löschen (siehe README).
-- Das Session-Cookie bleibt auf dem PC; nie in Chat, Repo oder Cloud-Sitzung
-  einfügen. `cookies.json`, `token.txt`, `.env` sind in `.gitignore`.
+- Das Session-Cookie liegt auf dem PC (`cookies.json`) und als
+  Umgebungsvariable `MFP_COOKIE` in der Cloud-Umgebung (vom Kontoinhaber so
+  entschieden). Nie ins Repo oder in Chat-Nachrichten schreiben.
+  `cookies.json`, `token.txt`, `.env` sind in `.gitignore`.
 
 ## Werkzeuge
 
 - MCP-Server `mfp-mcp` 0.3.0 über `uvx --python 3.12 mfp-mcp` (Python 3.12
-  wegen `lxml`), registriert im User-Scope als `myfitnesspal`.
+  wegen `lxml`): auf dem PC im User-Scope, in jeder Repo-Sitzung über
+  `.mcp.json`, jeweils als `myfitnesspal`. Skill `/mahlzeit` liegt in
+  `.claude/skills/mahlzeit/SKILL.md`.
+- Mahlzeiten werden über die Position adressiert (breakfast=1., lunch=2.,
+  dinner=3., snacks=4. Mahlzeit); die 4. Mahlzeit heißt im Konto „Snacks".
 - Alle Befehle für Windows-PowerShell ohne Adminrechte formulieren.

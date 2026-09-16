@@ -130,7 +130,7 @@ if ($status -match "Connected") { Ok "myfitnesspal: Connected" } else { Write-Ho
 Step 5 "Skill /mahlzeit installieren"
 $skillDir = Join-Path $env:USERPROFILE ".claude\skills\mahlzeit"
 New-Item -ItemType Directory -Force $skillDir -ErrorAction Stop | Out-Null
-Copy-Item (Join-Path $RepoRoot "skills\mahlzeit\SKILL.md") (Join-Path $skillDir "SKILL.md") -Force -ErrorAction Stop
+Copy-Item (Join-Path $RepoRoot ".claude\skills\mahlzeit\SKILL.md") (Join-Path $skillDir "SKILL.md") -Force -ErrorAction Stop
 Ok "SKILL.md nach $skillDir kopiert (in neuer Claude-Sitzung als /mahlzeit verfuegbar)"
 
 # ---------------------------------------------------------------- 6. Lesetest
