@@ -1,0 +1,18 @@
+# Niemals Session-Cookies oder Zugangsdaten versionieren
+cookies.json
+token.txt
+*.cookie
+.env
+.env.*
+!.env.example
+smoke-result*.json
+
+# Python / uv
+__pycache__/
+*.pyc
+.venv/
+uv.lock
+
+# OS
+.DS_Store
+Thumbs.db
