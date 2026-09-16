@@ -121,3 +121,13 @@ richtigen Mahlzeit stehen. Ausgeben:
 | `403` / Cloudflare | `MFP_IMPERSONATE=chrome124` in der MCP-Konfiguration setzen, VPN aus. |
 | Suche liefert 0 Treffer für alles | MFP hat die Suchseite geändert; auf `docs/mfp-tools.md` im Repo `MarqEwi/MyFitnessPal` verweisen, nichts loggen. |
 | `couldn't read your MyFitnessPal profile` | `MFP_USERNAME=MarqEwi` fehlt in der Server-Konfiguration. |
+
+## Schutzregeln (Hauptkonto)
+
+- Pro Aufruf höchstens eine Mahlzeit schreiben; nie mehrere Tage in einer
+  Schleife.
+- Einen fehlgeschlagenen `fitness_log_food`-Aufruf nicht automatisch
+  wiederholen; erst nachlesen (`fitness_get_day`), ob der Eintrag trotz Fehler
+  angekommen ist, damit nichts doppelt gebucht wird.
+- Löschen nur für Einträge, die in dieser Sitzung selbst angelegt wurden oder
+  die der Benutzer ausdrücklich benennt.

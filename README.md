@@ -26,10 +26,17 @@ beschreiben:
    das ist bei einem der beiden Kandidaten bereits passiert (siehe
    `docs/mfp-tools.md`).
 
-**Entscheidung, die noch aussteht:** Hauptkonto oder Zweitkonto? Ein
-Zweitkonto schützt die eigene Historie vor Sperrung und Fehlbuchungen, hat aber
-keine Ziele, Historie und Lieblingslebensmittel. Die Einrichtung ist für beide
-Varianten identisch, nur das Cookie stammt aus dem jeweils eingeloggten Konto.
+**Entscheidung (2026-09-16): Es wird das Hauptkonto `MarqEwi` benutzt.**
+Daraus folgen diese Schutzregeln, die Skill und Smoke-Test einhalten:
+
+- Kein Schreibvorgang ohne vorherige Freigabe im Chat oder im Terminal.
+- Testeinträge (Banane, „TEST Claude") werden im selben Lauf wieder gelöscht
+  und die Löschung wird per erneutem Lesen bestätigt.
+- Keine Massen-Schreibvorgänge, keine Schleifen, kein automatischer Retry auf
+  einen Schreib-Endpunkt; ein fehlgeschlagener Eintrag wird gemeldet, nicht
+  wiederholt.
+- Das Session-Cookie bleibt ausschließlich auf dem Windows-Rechner und wird
+  nie in Chat, Repo oder Cloud-Sitzung eingefügt.
 
 ## Kurzfassung der Einrichtung
 
