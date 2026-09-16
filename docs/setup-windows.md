@@ -6,6 +6,34 @@ myfitnesspal.com, Claude Code CLI (`claude --version`), PowerShell.
 Das Skript `scripts\setup-mfp-mcp.ps1` führt die Schritte 1 bis 5 aus und
 prüft jeden einzeln. Die manuelle Variante steht hier zum Nachvollziehen.
 
+## Schritt 0: PowerShell vorbereiten
+
+- PowerShell **ohne** Administratorrechte öffnen (Startmenü → „PowerShell").
+  Ein Admin-Fenster startet in `C:\WINDOWS\system32`; dort gehört das Repo
+  nicht hin.
+- Windows blockiert lokale `.ps1`-Skripte standardmäßig („Ausführung von
+  Skripts auf diesem System deaktiviert"). Einmalig für den eigenen Benutzer
+  freigeben:
+
+  ```powershell
+  Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+  ```
+
+  Wer das nicht dauerhaft will, startet das Skript stattdessen so:
+
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File .\scripts\setup-mfp-mcp.ps1
+  ```
+
+- Repo in den eigenen Benutzerordner klonen:
+
+  ```powershell
+  cd $env:USERPROFILE
+  git clone https://github.com/MarqEwi/MyFitnessPal
+  cd MyFitnessPal
+  git checkout claude/festive-mccarthy-x1f2gt
+  ```
+
 ## Schritt 1: Python 3.10+ und uv prüfen
 
 ```powershell

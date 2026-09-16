@@ -41,7 +41,9 @@ Daraus folgen diese Schutzregeln, die Skill und Smoke-Test einhalten:
 ## Kurzfassung der Einrichtung
 
 ```powershell
-# im Repo-Ordner, PowerShell
+# PowerShell ohne Adminrechte, im eigenen Benutzerordner
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # einmalig, gibt lokale Skripte frei
+cd $env:USERPROFILE\MyFitnessPal
 .\scripts\setup-mfp-mcp.ps1
 ```
 
