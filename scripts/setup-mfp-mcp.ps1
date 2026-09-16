@@ -83,7 +83,7 @@ Ok ("Claude Code " + (claude --version))
 
 # ---------------------------------------------------------------- 2. mfp-mcp installieren
 Step 2 "mfp-mcp installieren und starten"
-$help = uvx --python $UvPython --from $FromSpec mfp-mcp --help 2>&1
+$help = (uvx --python $UvPython --from $FromSpec mfp-mcp --help 2>&1) | Out-String
 if ($LASTEXITCODE -ne 0 -or ($help -notmatch "auth")) { Fail "uvx --python $UvPython --from $FromSpec mfp-mcp --help schlug fehl:`n$help" }
 Ok "uvx mfp-mcp startet (Version 0.3.0, Python $UvPython)"
 if ($AutoRefresh) {
@@ -123,7 +123,7 @@ if ($AutoRefresh) {
     claude mcp add --scope user myfitnesspal -e "MFP_USERNAME=$Username" -- uvx --python 3.12 mfp-mcp
 }
 if ($LASTEXITCODE -ne 0) { Fail "claude mcp add schlug fehl" }
-$status = claude mcp get myfitnesspal 2>&1
+$status = (claude mcp get myfitnesspal 2>&1) | Out-String
 if ($status -match "Connected") { Ok "myfitnesspal: Connected" } else { Write-Host $status; Fail "Server nicht verbunden" }
 
 # ---------------------------------------------------------------- 5. Skill kopieren
