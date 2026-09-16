@@ -1,7 +1,7 @@
 # MFP-Werkzeuge: Auswahl, Endpunkte, bekannte Fehler
 
 Stand der Recherche: 2026-09-16. Alle Angaben stammen aus den Repos, PyPI und
-den GitHub-Issues der beiden Kandidaten; Lesetests gegen MFP sind bestanden, Schreibtests stehen aus (siehe Abschnitt 6).
+den GitHub-Issues der beiden Kandidaten; Lese- und Tagebuch-Schreibtests gegen MFP sind bestanden; das Anlegen eigener Lebensmittel steht aus (siehe Abschnitt 6).
 
 ## 1. Vergleich der Kandidaten
 
@@ -43,7 +43,7 @@ das Cookie aus dem Windows-Chrome und wurden daher noch nicht ausgeführt.
 
 | Werkzeug | Zweck | Anmerkungen für die Skill |
 | --- | --- | --- |
-| `fitness_get_day(date)` | Tagessummen, Einträge pro Mahlzeit, Tagesnotiz | Einträge tragen den Mahlzeitnamen so, wie MFP ihn auf der Tagebuchseite zeigt (erstes Wort, Großschreibung). Erste Nutzung holt bis zu 30 Tage nach, ein Request pro Tag. |
+| `fitness_get_day(date)` | Tagessummen, Einträge pro Mahlzeit, Tagesnotiz | Einträge tragen den Mahlzeitnamen so, wie MFP ihn auf der Tagebuchseite zeigt (erstes Wort, Großschreibung). Eintragsname = „Marke - Name, Menge Einheit", z. B. „Obst - Banane, 120.0 gram". Erste Nutzung holt bis zu 30 Tage nach, ein Request pro Tag. |
 | `fitness_search_food(query, limit, with_macros)` | Kandidaten mit Marke, kcal, Eiweiß/KH/Fett, Portion, `verified`, `food_id`, `weight_id` | `serving` ist die **erste** Portionsgröße des Eintrags, `weight_id` gehört zu genau dieser Portion. Andere Portionsgrößen sind über das MCP nicht wählbar. |
 | `fitness_log_food(query, meal, quantity, date, food_id, weight_id)` | Eintrag ins echte Tagebuch | `quantity` = Anzahl der Portion aus `serving`. 120 g bei Portion „100 g" ⇒ `quantity=1.2`. `meal` ist eine **Position**: breakfast=0, lunch=1, dinner=2, snacks=3, unabhängig vom Namen im Konto. |
 | `fitness_delete_food(query, meal, date)` | Eintrag per Namens-Match löschen | `meal` wird hier gegen den **angezeigten Namen** (kleingeschrieben, erstes Wort) gefiltert. Bei deutschen Mahlzeitnamen `meal` weglassen oder den echten Namen nehmen. Bei Mehrdeutigkeit listet der Fehler die Kandidaten. |
@@ -111,7 +111,9 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-16 | Login mit Session-Cookie (Schritt 1.4) | OK | Benutzer `MarqEwi` |
 | 2026-09-16 | Tagebuch heute und gestern lesen (Schritt 1.5) | OK | – |
 | 2026-09-16 | Suche „Banane" (Schritt 2.1) | OK, 8 Treffer | Treffer 1: „Banane [Obst]", 100 g, 89 kcal, verifiziert, `food_id=2716704125`, `weight_id=3133739836` |
-| offen | Banane 120 g unter Snacks eintragen, prüfen, löschen (2.2–2.4) | ausstehend, wartet auf Freigabe | Vorgesehen: Treffer 1 × 1.2 Portionen |
+| 2026-09-16 | Banane 120 g unter Snacks eintragen (Schritt 2.2) | OK | `POST /food/add`, Treffer 1 × 1.2 Portionen, `food_id=2716704125` |
+| 2026-09-16 | Eintrag im Tagebuch sichtbar (Schritt 2.3) | OK | Anzeige „Obst - Banane, 120.0 gram: 107 kcal" in Mahlzeit `snacks` |
+| 2026-09-16 | Eintrag löschen und Löschung bestätigen (Schritt 2.4) | OK | `POST /food/remove/<id>`, erneutes Lesen zeigt keinen Eintrag mehr |
 | offen | Eigenes Lebensmittel „TEST Claude" anlegen und löschen (2.5) | ausstehend; nicht vom MCP abgedeckt, nur per Skript | – |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
