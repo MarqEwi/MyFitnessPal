@@ -8,10 +8,10 @@ param(
     [switch]$AutoRefresh
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"   # native Befehle werden ueber $LASTEXITCODE geprueft
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $Package  = "mfp-mcp==0.3.0"
-$Py       = "3.12"   # lxml 5.x (Abhaengigkeit) hat keine fertigen Pakete fuer Python 3.13+/3.14
+$UvPython = "3.12"   # lxml 5.x (Abhaengigkeit) hat keine fertigen Pakete fuer Python 3.13+/3.14
 $FromSpec = if ($AutoRefresh) { "mfp-mcp[autorefresh]==0.3.0" } else { $Package }
 
 function Step($n, $text) { Write-Host "`n== Schritt $n : $text ==" -ForegroundColor Cyan }
@@ -35,16 +35,16 @@ try {
 
 # ---------------------------------------------------------------- 1. Python + uv
 Step 1 "Python 3.10+ und uv pruefen"
-$py = $null
+$pyFound = $null
 foreach ($cmd in @("py -3", "python")) {
     try {
         $v = & ([scriptblock]::Create("$cmd --version")) 2>&1
         if ($v -match "Python (\d+)\.(\d+)") {
-            if ([int]$Matches[1] -gt 3 -or ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -ge 10)) { $py = "$cmd ($v)"; break }
+            if ([int]$Matches[1] -gt 3 -or ([int]$Matches[1] -eq 3 -and [int]$Matches[2] -ge 10)) { $pyFound = "$cmd ($v)"; break }
         }
     } catch {}
 }
-if ($py) { Ok "Python gefunden: $py" } else { Write-Host "  [INFO] Kein Python >= 3.10 im PATH; uv installiert bei Bedarf selbst eines." }
+if ($pyFound) { Ok "Python gefunden: $pyFound" } else { Write-Host "  [INFO] Kein Python >= 3.10 im PATH; uv installiert bei Bedarf selbst eines." }
 
 if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     Write-Host "  uv fehlt. Installation..."
@@ -60,7 +60,15 @@ Ok ("uv " + (uv --version))
 # Claude Code CLI: erst PATH, dann bekannte Installationsorte, sonst Installation anbieten
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
     foreach ($cand in @("$env:USERPROFILE\.local\bin", "$env:APPDATA\npm", "$env:LOCALAPPDATA\Programs\claude")) {
-        if ((Test-Path "$cand\claude.exe") -or (Test-Path "$cand\claude.cmd")) { $env:Path = "$cand;$env:Path"; break }
+        if ((Test-Path "$cand\claude.exe") -or (Test-Path "$cand\claude.cmd")) {
+            $env:Path = "$cand;$env:Path"
+            $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+            if (($userPath -split ";") -notcontains $cand) {
+                [System.Environment]::SetEnvironmentVariable("Path", "$cand;$userPath", "User")
+                Write-Host "  [INFO] $cand dauerhaft in den Benutzer-PATH aufgenommen (gilt fuer neue Fenster)."
+            }
+            break
+        }
     }
 }
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
@@ -75,18 +83,18 @@ Ok ("Claude Code " + (claude --version))
 
 # ---------------------------------------------------------------- 2. mfp-mcp installieren
 Step 2 "mfp-mcp installieren und starten"
-$help = uvx --python $Py --from $FromSpec mfp-mcp --help 2>&1
-if ($LASTEXITCODE -ne 0 -or ($help -notmatch "auth")) { Fail "uvx --python $Py --from $FromSpec mfp-mcp --help schlug fehl:`n$help" }
-Ok "uvx mfp-mcp startet (Version 0.3.0, Python $Py)"
+$help = uvx --python $UvPython --from $FromSpec mfp-mcp --help 2>&1
+if ($LASTEXITCODE -ne 0 -or ($help -notmatch "auth")) { Fail "uvx --python $UvPython --from $FromSpec mfp-mcp --help schlug fehl:`n$help" }
+Ok "uvx mfp-mcp startet (Version 0.3.0, Python $UvPython)"
 if ($AutoRefresh) {
-    uvx --python $Py --from $FromSpec playwright install chromium
+    uvx --python $UvPython --from $FromSpec playwright install chromium
     if ($LASTEXITCODE -ne 0) { Fail "playwright install chromium schlug fehl" }
     Ok "Chromium fuer Auto-Refresh installiert"
 }
 
 # ---------------------------------------------------------------- 3. Cookie
 Step 3 "Session-Cookie aus Chrome hinterlegen"
-$cookiePath = uv run --quiet --python $Py --with $Package python -c "from myfitnesspal_mcp import config; print(config.cookies_path())"
+$cookiePath = uv run --quiet --python $UvPython --with $Package python -c "from myfitnesspal_mcp import config; print(config.cookies_path())"
 if (-not $SkipAuth) {
     Write-Host @"
   1. In Chrome auf https://www.myfitnesspal.com einloggen.
@@ -96,7 +104,7 @@ if (-not $SkipAuth) {
      Fragt das Tool nach dem Benutzernamen: $Username
 "@
     $env:MFP_USERNAME = $Username
-    uvx --python $Py --from $FromSpec mfp-mcp auth
+    uvx --python $UvPython --from $FromSpec mfp-mcp auth
     if ($LASTEXITCODE -ne 0) { Fail "mfp-mcp auth schlug fehl. Bei 403: `$env:MFP_IMPERSONATE='chrome124' setzen, VPN aus, erneut starten." }
 }
 if (Test-Path $cookiePath) {
@@ -121,13 +129,13 @@ if ($status -match "Connected") { Ok "myfitnesspal: Connected" } else { Write-Ho
 # ---------------------------------------------------------------- 5. Skill kopieren
 Step 5 "Skill /mahlzeit installieren"
 $skillDir = Join-Path $env:USERPROFILE ".claude\skills\mahlzeit"
-New-Item -ItemType Directory -Force $skillDir | Out-Null
-Copy-Item (Join-Path $RepoRoot "skills\mahlzeit\SKILL.md") (Join-Path $skillDir "SKILL.md") -Force
+New-Item -ItemType Directory -Force $skillDir -ErrorAction Stop | Out-Null
+Copy-Item (Join-Path $RepoRoot "skills\mahlzeit\SKILL.md") (Join-Path $skillDir "SKILL.md") -Force -ErrorAction Stop
 Ok "SKILL.md nach $skillDir kopiert (in neuer Claude-Sitzung als /mahlzeit verfuegbar)"
 
 # ---------------------------------------------------------------- 6. Lesetest
 Step 6 "Lesetest: Tagebuch heute und gestern"
-uv run --python $Py --with $Package python (Join-Path $RepoRoot "scripts\mfp_smoke_test.py")
+uv run --python $UvPython --with $Package python (Join-Path $RepoRoot "scripts\mfp_smoke_test.py")
 if ($LASTEXITCODE -ne 0) { Fail "Lesetest meldet Fehler (siehe oben). Details: docs/mfp-tools.md, Abschnitt 6." }
 Ok "Lesetest bestanden."
 Write-Host "`nNaechster Schritt (Schreibtest, fragt vor dem Schreiben):"
