@@ -1,8 +1,7 @@
 # MFP-Werkzeuge: Auswahl, Endpunkte, bekannte Fehler
 
 Stand der Recherche: 2026-09-16. Alle Angaben stammen aus den Repos, PyPI und
-den GitHub-Issues der beiden Kandidaten; Live-Tests gegen MFP stehen noch aus
-(siehe Abschnitt „Teststatus").
+den GitHub-Issues der beiden Kandidaten; Lesetests gegen MFP sind bestanden, Schreibtests stehen aus (siehe Abschnitt 6).
 
 ## 1. Vergleich der Kandidaten
 
@@ -108,9 +107,11 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | --- | --- | --- | --- |
 | 2026-09-16 | Installation, `claude mcp add`, Tool-Liste über stdio | OK (Linux-Container, ohne Cookie) | – |
 | 2026-09-16 | 62 Unit-Tests von `mfp-mcp` | OK | – |
-| offen | Tagebuch heute/gestern lesen (Schritt 1.5) | ausstehend, braucht Cookie aus Windows-Chrome | – |
-| offen | Suche „Banane" (Schritt 2.1) | ausstehend | – |
-| offen | Banane 120 g unter Snacks eintragen, prüfen, löschen (2.2–2.4) | ausstehend | – |
+| 2026-09-16 | Setup auf Windows-PC: Python 3.12 via uv, Cookie aus Chrome, `claude mcp add`, Status Connected | OK | Hürden: Execution Policy, fehlende Schreibrechte auf `C:\Users\Marc`, Claude-CLI nicht installiert; alle behoben, siehe `docs/setup-windows.md` |
+| 2026-09-16 | Login mit Session-Cookie (Schritt 1.4) | OK | Benutzer `MarqEwi` |
+| 2026-09-16 | Tagebuch heute und gestern lesen (Schritt 1.5) | OK | – |
+| 2026-09-16 | Suche „Banane" (Schritt 2.1) | OK, 8 Treffer | Treffer 1: „Banane [Obst]", 100 g, 89 kcal, verifiziert, `food_id=2716704125`, `weight_id=3133739836` |
+| offen | Banane 120 g unter Snacks eintragen, prüfen, löschen (2.2–2.4) | ausstehend, wartet auf Freigabe | Vorgesehen: Treffer 1 × 1.2 Portionen |
 | offen | Eigenes Lebensmittel „TEST Claude" anlegen und löschen (2.5) | ausstehend; nicht vom MCP abgedeckt, nur per Skript | – |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
