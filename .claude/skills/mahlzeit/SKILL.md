@@ -116,12 +116,25 @@ am Ende auflisten, was fehlt.
 ### 5. Prüfen und berichten
 
 `fitness_get_day(date)` aufrufen und bestätigen, dass alle Zutaten in der
-richtigen Mahlzeit stehen. Ausgeben:
+richtigen Mahlzeit stehen. Dann die Ziele holen (der MCP-Server kennt nur das
+kcal-Ziel; das Skript liest Makro-Ziele und Mahlzeit-Budgets):
+
+```
+uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_goals.py --date <Datum>
+```
+
+Ausgeben:
 
 - geloggte Einträge mit kcal,
-- Tagessumme kcal / Eiweiß / KH / Fett und, falls `goal_calories` vorhanden,
-  verbleibende kcal,
+- Tabelle Tagesstand: gegessen / Ziel / Rest für kcal, Eiweiß, KH, Fett
+  (Zucker und Natrium nur, wenn der Benutzer danach fragt),
+- Mahlzeit-Budget der gerade geloggten Mahlzeit (z. B. „Frühstück 465 / 541 kcal"),
+- ein Satz Einordnung, wenn ein Makro-Rest auffällig ist (z. B. viel Eiweiß
+  offen, Fett fast aufgebraucht),
 - Abweichung zwischen berechneter Tabelle und MFP-Summe, falls > 5 %.
+
+Auch ohne Mahlzeit nutzbar: „Wie stehe ich heute?" ⇒ nur `mfp_goals.py`
+ausführen und die Tabelle zeigen.
 
 ## Korrektur und Rückgängig
 

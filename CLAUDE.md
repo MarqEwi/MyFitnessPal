@@ -22,6 +22,10 @@ Neue Ordner und Klone auf dem PC des Benutzers immer unter
   wegen `lxml`): auf dem PC im User-Scope, in jeder Repo-Sitzung über
   `.mcp.json`, jeweils als `myfitnesspal`. Skill `/mahlzeit` liegt in
   `.claude/skills/mahlzeit/SKILL.md`.
+- Makro-Ziele und Mahlzeit-Budgets liefert nur `scripts/mfp_goals.py`
+  (Endpunkt `/v2/nutrient-goals`), der MCP-Server kennt nur das kcal-Ziel.
+  Eigene Lebensmittel: `scripts/mfp_food.py`. Beide laufen per
+  `uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/<name>.py`.
 - Mahlzeiten im Konto heißen breakfast, lunch, dinner, snacks (englische
   Standardnamen, bestätigt 2026-09-17); Position und Name stimmen überein.
 - Alle Befehle für Windows-PowerShell ohne Adminrechte formulieren.

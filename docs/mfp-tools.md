@@ -61,6 +61,7 @@ das Cookie aus dem Windows-Chrome und wurden daher noch nicht ausgeführt.
 | Eintrag löschen | `POST https://www.myfitnesspal.com/food/remove/<food_entry_id>` (`_method=delete`, `authenticity_token`) | CSRF-Token der Tagebuchseite |
 | Tagesnotiz | `GET/POST https://www.myfitnesspal.com/food/note` | dito |
 | Gewicht | `POST https://api.myfitnesspal.com/v2/measurements` | Bearer |
+| Ziele (kcal, alle Nährstoffe, je Wochentag, Budget je Mahlzeit) | `GET https://api.myfitnesspal.com/v2/nutrient-goals` (nur `scripts/mfp_goals.py`, nicht im MCP) | Bearer |
 
 ## 4. Eigenes Lebensmittel anlegen (nicht in `mfp-mcp`)
 
@@ -123,6 +124,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | In „Meine Lebensmittel" sichtbar (2.5) | OK | `GET /api/services/users/foods/mine?search=TEST Claude` → 1 Treffer |
 | 2026-09-17 | Eigenes Lebensmittel löschen (2.5) | OK | `DELETE /api/services/foods/124276794449013` → HTTP 204 |
 | 2026-09-17 | Ende-zu-Ende aus der Cloud-Sitzung über die MCP-Werkzeuge: `fitness_get_day`, `fitness_search_food` („Skyr Milbona"), `fitness_log_food` (300 g Frühstück), Gegenprüfung | OK | Eintrag „Generic Skyr Milbona - Skyr Milbona , 300 gram", 186 kcal, E 33 g, KH 12 g, F 1 g (MFP rundet 0,6 g auf 1 g); Cloudflare hat die Cloud-IP nicht blockiert |
+| 2026-09-17 | Ziele lesen über `/v2/nutrient-goals` (`scripts/mfp_goals.py`) | OK | Ziel 1803 kcal, E 216 g, KH 129 g, F 47 g, Ballaststoffe 38 g, Zucker 107 g, Natrium 2300 mg; Mahlzeit-Budgets 541/541/541/180 kcal |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
