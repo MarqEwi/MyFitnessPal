@@ -24,18 +24,25 @@ durch (Startseite 200, geschützte Seiten leiten ohne Challenge zum Login um).
 1. Am PC in Chrome bei myfitnesspal.com eingeloggt sein. `F12` →
    **Application** → **Cookies** → `https://www.myfitnesspal.com` → Wert von
    `__Secure-next-auth.session-token` kopieren.
-2. Im Browser <https://claude.ai/code> öffnen → **Environments** (Umgebungen)
-   → die Umgebung wählen, in der die MyFitnessPal-Sitzungen laufen → **Edit**.
-3. Unter **Environment variables** eintragen:
+2. Im Browser <https://claude.ai/code> öffnen. Direkt **über dem
+   Eingabefeld** steht eine Schaltfläche mit Wolken-Symbol und dem Namen der
+   aktuellen Umgebung, meist **Default**. Darauf klicken. Im aufklappenden
+   Menü unter **Cloud** mit der Maus über die Umgebung fahren; rechts
+   erscheint ein **Zahnrad**. Darauf klicken, es öffnet sich der Dialog
+   „Update cloud environment". (Es gibt keine eigene Einstellungsseite und
+   keine URL dafür; nur dieser Weg.)
+3. Im Dialog unter **Environment variables** eintragen:
 
    ```
    MFP_COOKIE=<der kopierte Wert>
    ```
 
    Speichern. Die Variable gilt für alle **neuen** Sitzungen dieser Umgebung;
-   laufende Sitzungen bekommen sie nicht mehr.
+   laufende Sitzungen bekommen sie nicht mehr. Der Hinweis im Dialog, dass
+   jeder Nutzer der Umgebung die Werte lesen kann, betrifft bei einem
+   persönlichen Konto nur einen selbst.
 
-   Doku: <https://code.claude.com/docs/en/claude-code-on-the-web>
+   Doku: <https://code.claude.com/docs/en/cloud-environments#configure-your-environment>
 
 4. Neue Sitzung im Repo `MarqEwi/MyFitnessPal` starten und testen:
 
