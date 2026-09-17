@@ -10,6 +10,7 @@ beschreiben:
 | Schritt-für-Schritt-Einrichtung unter Windows inkl. Cookie | [`docs/setup-windows.md`](docs/setup-windows.md) |
 | PowerShell-Skript, das die Einrichtung ausführt und prüft | [`scripts/setup-mfp-mcp.ps1`](scripts/setup-mfp-mcp.ps1) |
 | Lese-/Schreib-Smoke-Test (Tagebuch, Banane, eigenes Lebensmittel) | [`scripts/mfp_smoke_test.py`](scripts/mfp_smoke_test.py) |
+| Eigene Lebensmittel anlegen, listen, löschen (Etikett-Werte) | [`scripts/mfp_food.py`](scripts/mfp_food.py) |
 | Claude-Code-Skill `/mahlzeit` (Projekt-Skill, gilt in Cloud und PC) | [`.claude/skills/mahlzeit/SKILL.md`](.claude/skills/mahlzeit/SKILL.md) |
 | MCP-Server für jede Sitzung in diesem Repo | [`.mcp.json`](.mcp.json) |
 | Einrichtung für Handy und Cloud, ohne PC | [`docs/setup-cloud.md`](docs/setup-cloud.md) |

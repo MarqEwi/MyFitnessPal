@@ -1,7 +1,7 @@
 # MFP-Werkzeuge: Auswahl, Endpunkte, bekannte Fehler
 
 Stand der Recherche: 2026-09-16. Alle Angaben stammen aus den Repos, PyPI und
-den GitHub-Issues der beiden Kandidaten; Lese- und Tagebuch-Schreibtests gegen MFP sind bestanden; das Anlegen eigener Lebensmittel steht aus (siehe Abschnitt 6).
+den GitHub-Issues der beiden Kandidaten; Alle Tests aus Schritt 1 und 2 sind gegen das Konto `MarqEwi` bestanden (siehe Abschnitt 6).
 
 ## 1. Vergleich der Kandidaten
 
@@ -71,7 +71,9 @@ unbekannt (AdamWalt berichtet, dass der ebenfalls legacy `/food/diary/<user>/add
 inzwischen 404 liefert).
 
 AdamWalt hat am 2026-07-26 stattdessen die Endpunkte des heutigen Web-Clients
-verifiziert; `scripts/mfp_smoke_test.py --custom-food` benutzt genau diese:
+verifiziert; am 2026-09-17 mit dem Konto `MarqEwi` bestätigt. `scripts/mfp_food.py`
+(`list`, `create`, `delete`) und `scripts/mfp_smoke_test.py --custom-food`
+benutzen genau diese:
 
 | Schritt | Endpunkt |
 | --- | --- |
@@ -116,7 +118,10 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-16 | Banane 120 g unter Snacks eintragen (Schritt 2.2) | OK | `POST /food/add`, Treffer 1 × 1.2 Portionen, `food_id=2716704125` |
 | 2026-09-16 | Eintrag im Tagebuch sichtbar (Schritt 2.3) | OK | Anzeige „Obst - Banane, 120.0 gram: 107 kcal" in Mahlzeit `snacks` |
 | 2026-09-16 | Eintrag löschen und Löschung bestätigen (Schritt 2.4) | OK | `POST /food/remove/<id>`, erneutes Lesen zeigt keinen Eintrag mehr |
-| offen | Eigenes Lebensmittel „TEST Claude" anlegen und löschen (2.5) | ausstehend; nicht vom MCP abgedeckt, nur per Skript | – |
+| 2026-09-17 | Lesetest erneut, Mahlzeitnamen ausgelesen | OK | Namen: breakfast, lunch, dinner, snacks; Tagesziel 1803 kcal. Warnung „Unable to fetch user metadata, status 500" ist bekannt und durch `MFP_USERNAME` abgefangen |
+| 2026-09-17 | Eigenes Lebensmittel „TEST Claude" anlegen (2.5) | OK | `POST /api/services/foods` → HTTP 200, id 124276794449013 |
+| 2026-09-17 | In „Meine Lebensmittel" sichtbar (2.5) | OK | `GET /api/services/users/foods/mine?search=TEST Claude` → 1 Treffer |
+| 2026-09-17 | Eigenes Lebensmittel löschen (2.5) | OK | `DELETE /api/services/foods/124276794449013` → HTTP 204 |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 

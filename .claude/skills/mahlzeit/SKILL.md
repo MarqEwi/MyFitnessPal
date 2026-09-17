@@ -74,6 +74,19 @@ Auswahlregeln, in dieser Reihenfolge:
 Merken pro Zutat: `food_id`, `weight_id`, Portionsgröße aus `serving`,
 Nährwerte je Portion.
 
+Findet sich für ein Markenprodukt kein passender Treffer und der Benutzer
+nennt die Etikett-Werte je 100 g, kann ein eigenes Lebensmittel angelegt
+werden (nur nach Rückfrage, das MCP kann das nicht):
+
+```
+uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_food.py create --name "<Name>" --brand "<Marke>" --kcal <n> --protein <g> --carbs <g> --fat <g>
+```
+
+Danach erneut `fitness_search_food` mit dem Namen; erscheint es dort nicht,
+mit dem nächstbesten Datenbank-Treffer loggen und den Benutzer darauf
+hinweisen, dass das eigene Lebensmittel in der MFP-App unter „Meine
+Lebensmittel" wählbar ist.
+
 ### 3. Berechnen
 
 `quantity = Menge in g / Portionsgröße in g` (bei „100 g" also 200 g ⇒ 2.0;
