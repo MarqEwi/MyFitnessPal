@@ -22,6 +22,9 @@ Neue Ordner und Klone auf dem PC des Benutzers immer unter
   wegen `lxml`): auf dem PC im User-Scope, in jeder Repo-Sitzung über
   `.mcp.json`, jeweils als `myfitnesspal`. Skill `/mahlzeit` liegt in
   `.claude/skills/mahlzeit/SKILL.md`.
+- Ernährungsplan in `plan.json`: Trainingstag 2180 kcal / Ruhetag 1803 kcal,
+  216 g Eiweiß fest; Ziele sollen erreicht, nicht unterschritten werden.
+  Ohne Angabe im Text gilt Ruhetag (kurz sagen).
 - Makro-Ziele und Mahlzeit-Budgets liefert nur `scripts/mfp_goals.py`
   (Endpunkt `/v2/nutrient-goals`), der MCP-Server kennt nur das kcal-Ziel.
   Eigene Lebensmittel: `scripts/mfp_food.py`. Beide laufen per

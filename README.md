@@ -12,6 +12,7 @@ beschreiben:
 | Lese-/Schreib-Smoke-Test (Tagebuch, Banane, eigenes Lebensmittel) | [`scripts/mfp_smoke_test.py`](scripts/mfp_smoke_test.py) |
 | Eigene Lebensmittel anlegen, listen, löschen (Etikett-Werte) | [`scripts/mfp_food.py`](scripts/mfp_food.py) |
 | Tagesziele (kcal, Makros, Mahlzeit-Budgets) und Rest für den Tag | [`scripts/mfp_goals.py`](scripts/mfp_goals.py) |
+| Ernährungsplan: Trainingstag/Ruhetag, Eiweiß fest | [`plan.json`](plan.json) |
 | Claude-Code-Skill `/mahlzeit` (Projekt-Skill, gilt in Cloud und PC) | [`.claude/skills/mahlzeit/SKILL.md`](.claude/skills/mahlzeit/SKILL.md) |
 | MCP-Server für jede Sitzung in diesem Repo | [`.mcp.json`](.mcp.json) |
 | Einrichtung für Handy und Cloud, ohne PC | [`docs/setup-cloud.md`](docs/setup-cloud.md) |

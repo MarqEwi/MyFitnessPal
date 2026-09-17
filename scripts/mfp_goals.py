@@ -2,10 +2,12 @@
 """Tagesziele (kcal, Makros, Ballaststoffe, Zucker, Natrium, Mahlzeit-Budgets)
 und Tagesstand aus MyFitnessPal: gegessen, Ziel, Rest.
 
-    uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_goals.py [--date YYYY-MM-DD] [--json]
+    uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_goals.py [--date YYYY-MM-DD] [--plan auto|training|rest|mfp] [--json]
 
-Quellen: Tagebuchseite (Summen) und https://api.myfitnesspal.com/v2/nutrient-goals
-(Ziele je Wochentag, inkl. Ziel pro Mahlzeit). Cookie aus MFP_COOKIE oder cookies.json.
+Quellen: Tagebuchseite (Summen), https://api.myfitnesspal.com/v2/nutrient-goals
+(MFP-Ziele, Budget je Mahlzeit) und plan.json im Repo (Trainingstag/Ruhetag).
+--plan auto (Standard): Tagestyp aus plan.json/training_days, sonst Ruhetag.
+--plan mfp: nur die in MFP hinterlegten Ziele. Cookie aus MFP_COOKIE oder cookies.json.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ import json
 import logging
 import sys
 from datetime import date
+from pathlib import Path
 
 logging.getLogger("myfitnesspal").setLevel(logging.ERROR)  # bekannte 500-Warnung des Profil-Endpunkts
 
@@ -66,8 +69,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--date", help="YYYY-MM-DD (Standard: heute)")
     ap.add_argument("--json", action="store_true", help="maschinenlesbar")
+    ap.add_argument("--plan", default="auto", choices=["auto", "training", "rest", "mfp"],
+                    help="Ziele aus plan.json fuer Trainingstag/Ruhetag statt aus MFP")
     args = ap.parse_args()
     day = date.fromisoformat(args.date) if args.date else date.today()
+    plan_path = Path(__file__).resolve().parent.parent / "plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8")) if plan_path.exists() else None
 
     try:
         client = mfp_client.get_client()
@@ -82,7 +89,19 @@ def main() -> int:
         goal = {k: v for k, v in dict(mfp_day.goals or {}).items()}
         goal["energy"] = goal.pop("calories", None)
 
-    out = {"day": day.isoformat(), "rows": [], "meals": []}
+    day_type = None
+    if plan and args.plan != "mfp":
+        if args.plan in ("training", "rest"):
+            day_type = args.plan
+        else:
+            weekday = day.strftime("%A").lower()
+            day_type = "training" if weekday in (plan.get("training_days") or []) else "rest"
+        p = plan[day_type]
+        goal = dict(goal)  # Mahlzeit-Budgets aus MFP behalten
+        goal.update({"energy": p["kcal"], "protein": plan["protein_g"],
+                     "carbohydrates": p["carbs_g"], "fat": p["fat_g"]})
+
+    out = {"day": day.isoformat(), "day_type": day_type, "rows": [], "meals": []}
     for label, unit, tkey, gkey in ROWS:
         g = num(goal.get(gkey))
         if g is None:
@@ -101,16 +120,29 @@ def main() -> int:
         print(json.dumps(out, ensure_ascii=False, indent=1))
         return 0
 
-    print(f"Tagesstand {day.isoformat()}")
+    label = {"training": "Trainingstag", "rest": "Ruhetag"}.get(day_type, "MFP-Ziele")
+    print(f"Tagesstand {day.isoformat()} ({label})")
     print(f"{'':15}{'gegessen':>10}{'Ziel':>10}{'Rest':>10}")
     for r in out["rows"]:
         eaten = "-" if r["eaten"] is None else f"{r['eaten']:.0f}"
         rest = "-" if r["remaining"] is None else f"{r['remaining']:.0f}"
         print(f"{r['name']:15}{eaten:>10}{r['goal']:>10.0f}{rest:>10}  {r['unit']}")
-    print("\nMahlzeit-Budgets (kcal)")
+    print("\nMahlzeit-Budgets (kcal, aus MFP)")
     for m in out["meals"]:
         g = "-" if m["goal"] is None else f"{m['goal']:.0f}"
         print(f"  {m['meal']:10}{m['eaten']:>8.0f} / {g}")
+    if plan and day_type:
+        must = plan.get("mindestens_erreichen") or []
+        rows = {r["name"]: r for r in out["rows"]}
+        hints = []
+        if "protein_g" in must and rows.get("Eiweiß", {}).get("remaining", 0) > 0:
+            hints.append(f"Eiweiß: noch {rows['Eiweiß']['remaining']:.0f} g bis zum Ziel")
+        if "kcal" in must and rows.get("Kalorien", {}).get("remaining", 0) > plan.get("toleranz_kcal", 100):
+            hints.append(f"Kalorien: noch {rows['Kalorien']['remaining']:.0f} kcal offen (Ziel erreichen, nicht unterschreiten)")
+        if hints:
+            print("\nOffen laut Plan:")
+            for h in hints:
+                print(f"  - {h}")
     return 0
 
 

@@ -1,0 +1,9 @@
+{
+  "_kommentar": "Ernaehrungsplan von Marc (Stand 2026-09-17). Grundlage: Grundumsatz 1893 kcal, aggressives Defizit, Eiweiss fest. kcal je Tagestyp ergeben sich aus den Makros (4/9/4 kcal je g). training_days: Wochentage (monday..sunday) mit Training; leer = Tagestyp wird pro Nachricht angegeben (Trainingstag/Ruhetag), sonst Ruhetag.",
+  "protein_g": 216,
+  "training": { "fat_g": 60, "carbs_g": 194, "kcal": 2180 },
+  "rest":     { "fat_g": 47, "carbs_g": 129, "kcal": 1803 },
+  "training_days": [],
+  "mindestens_erreichen": ["protein_g", "kcal"],
+  "toleranz_kcal": 100
+}

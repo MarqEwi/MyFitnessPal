@@ -37,6 +37,21 @@ Fehlt die Mahlzeit im Text, aus der lokalen Uhrzeit ableiten und im Ergebnis
 nennen: bis 10:30 Frühstück, 10:30 bis 14:30 Mittag, 14:30 bis 17:30 Snack,
 ab 17:30 Abend.
 
+## Ernährungsplan (plan.json)
+
+Der Benutzer fährt ein aggressives Defizit mit festem Eiweißziel und will die
+Tagesziele **erreichen, nicht unterschreiten**. Werte stehen in `plan.json`:
+
+| Tagestyp | kcal | Eiweiß | KH | Fett |
+| --- | --- | --- | --- | --- |
+| Trainingstag | 2180 | 216 g | 194 g | 60 g |
+| Ruhetag | 1803 | 216 g | 129 g | 47 g |
+
+Tagestyp erkennen: „Trainingstag", „nach dem Training", „Training heute" ⇒
+`training`; „Ruhetag", „trainingsfrei" ⇒ `rest`. Steht nichts im Text und
+`training_days` in `plan.json` ist leer, **Ruhetag annehmen und das in einem
+Halbsatz sagen** („ich rechne mit Ruhetag, sag Trainingstag, falls nicht").
+
 ## Ablauf
 
 ### 1. Parsen
@@ -120,7 +135,7 @@ richtigen Mahlzeit stehen. Dann die Ziele holen (der MCP-Server kennt nur das
 kcal-Ziel; das Skript liest Makro-Ziele und Mahlzeit-Budgets):
 
 ```
-uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_goals.py --date <Datum>
+uv run --python 3.12 --with mfp-mcp==0.3.0 python scripts/mfp_goals.py --date <Datum> --plan <training|rest>
 ```
 
 Ausgeben:
@@ -135,6 +150,27 @@ Ausgeben:
 
 Auch ohne Mahlzeit nutzbar: „Wie stehe ich heute?" ⇒ nur `mfp_goals.py`
 ausführen und die Tabelle zeigen.
+
+### 6. Lücke schließen („Was fehlt mir noch?", oder automatisch nach Abend/Snack)
+
+Das Ziel des Benutzers ist, die Tageswerte zu **erreichen**. Nach der
+Abendmahlzeit, bei einem Snack nach 17 Uhr oder auf Nachfrage:
+
+1. Rest für kcal, Eiweiß, KH, Fett aus `mfp_goals.py` nehmen.
+2. Zwei bis drei konkrete Vorschläge machen, die die Lücke schließen, mit
+   Menge und kcal/Eiweiß, priorisiert nach dem größten offenen Makro. Bei
+   viel offenem Eiweiß und wenig offenem Fett: Magerquark, Skyr, Hähnchenbrust,
+   Thunfisch im eigenen Saft, Eiklar, Whey. Bei offenen KH: Reis, Kartoffeln,
+   Haferflocken, Obst. Bei offenem Fett: Nüsse, Olivenöl, Eier, Lachs.
+3. Werte für die Vorschläge aus `fitness_search_food` holen (kein Raten),
+   Vorschläge so bemessen, dass der Tag innerhalb ±100 kcal des Ziels landet
+   und Eiweiß erreicht ist.
+4. Wählt der Benutzer einen Vorschlag, läuft er als normale Mahlzeit durch
+   Schritt 3 bis 5.
+
+Beispielausgabe: „Offen: 620 kcal, 78 g Eiweiß, 40 g KH, 9 g Fett. Vorschlag:
+500 g Magerquark (335 kcal, 60 g E) + 1 Banane 120 g (107 kcal, 25 g KH)
+⇒ Rest 178 kcal, 17 g E. Oder: 250 g Hähnchenbrust …"
 
 ## Korrektur und Rückgängig
 
