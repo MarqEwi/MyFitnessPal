@@ -21,6 +21,10 @@ from pathlib import Path
 
 logging.getLogger("myfitnesspal").setLevel(logging.ERROR)  # bekannte 500-Warnung des Profil-Endpunkts
 
+import os
+
+os.environ.setdefault("MFP_USERNAME", "MarqEwi")  # MFP-Profil-Endpunkt liefert 500; Name ist nicht geheim
+
 try:
     from myfitnesspal_mcp import diary, mfp_client
 except ImportError:
