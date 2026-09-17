@@ -125,6 +125,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | Eigenes Lebensmittel löschen (2.5) | OK | `DELETE /api/services/foods/124276794449013` → HTTP 204 |
 | 2026-09-17 | Ende-zu-Ende aus der Cloud-Sitzung über die MCP-Werkzeuge: `fitness_get_day`, `fitness_search_food` („Skyr Milbona"), `fitness_log_food` (300 g Frühstück), Gegenprüfung | OK | Eintrag „Generic Skyr Milbona - Skyr Milbona , 300 gram", 186 kcal, E 33 g, KH 12 g, F 1 g (MFP rundet 0,6 g auf 1 g); Cloudflare hat die Cloud-IP nicht blockiert |
 | 2026-09-17 | Ziele lesen über `/v2/nutrient-goals` (`scripts/mfp_goals.py`) | OK | Ziel 1803 kcal, E 216 g, KH 129 g, F 47 g, Ballaststoffe 38 g, Zucker 107 g, Natrium 2300 mg; Mahlzeit-Budgets 541/541/541/180 kcal |
+| 2026-09-17 | Frische Cloud-Sitzung: MFP_COOKIE aus Umgebung, fitness_get_day + mfp_goals.py | FEHLER | fitness_get_day OK (181 kcal am Tag), aber `mfp_goals.py` bricht ab: „Authenticated, but couldn't read your MyFitnessPal profile. Set MFP_USERNAME to your MyFitnessPal username" – mit `MFP_USERNAME=MarqEwi` in der Umgebung läuft das Skript durch (Trainingstag 2180 kcal, E 216 g) |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
