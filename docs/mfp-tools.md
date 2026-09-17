@@ -122,6 +122,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | Eigenes Lebensmittel „TEST Claude" anlegen (2.5) | OK | `POST /api/services/foods` → HTTP 200, id 124276794449013 |
 | 2026-09-17 | In „Meine Lebensmittel" sichtbar (2.5) | OK | `GET /api/services/users/foods/mine?search=TEST Claude` → 1 Treffer |
 | 2026-09-17 | Eigenes Lebensmittel löschen (2.5) | OK | `DELETE /api/services/foods/124276794449013` → HTTP 204 |
+| 2026-09-17 | Ende-zu-Ende aus der Cloud-Sitzung über die MCP-Werkzeuge: `fitness_get_day`, `fitness_search_food` („Skyr Milbona"), `fitness_log_food` (300 g Frühstück), Gegenprüfung | OK | Eintrag „Generic Skyr Milbona - Skyr Milbona , 300 gram", 186 kcal, E 33 g, KH 12 g, F 1 g (MFP rundet 0,6 g auf 1 g); Cloudflare hat die Cloud-IP nicht blockiert |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
