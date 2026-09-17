@@ -22,6 +22,6 @@ Neue Ordner und Klone auf dem PC des Benutzers immer unter
   wegen `lxml`): auf dem PC im User-Scope, in jeder Repo-Sitzung über
   `.mcp.json`, jeweils als `myfitnesspal`. Skill `/mahlzeit` liegt in
   `.claude/skills/mahlzeit/SKILL.md`.
-- Mahlzeiten werden über die Position adressiert (breakfast=1., lunch=2.,
-  dinner=3., snacks=4. Mahlzeit); die 4. Mahlzeit heißt im Konto „Snacks".
+- Mahlzeiten im Konto heißen breakfast, lunch, dinner, snacks (englische
+  Standardnamen, bestätigt 2026-09-17); Position und Name stimmen überein.
 - Alle Befehle für Windows-PowerShell ohne Adminrechte formulieren.

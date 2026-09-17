@@ -23,12 +23,15 @@ bevor der Benutzer die berechnete Tabelle freigegeben hat.
 `snacks` = 4. Die tatsächlichen Namen liefert `fitness_get_day` in der
 Reihenfolge des Kontos.
 
-| Nutzer sagt | `meal`-Parameter | Name im Konto (nach erstem Lesetest eintragen) |
+| Nutzer sagt | `meal`-Parameter | Name im Konto (bestätigt 2026-09-17) |
 | --- | --- | --- |
-| Frühstück, morgens | `breakfast` | _TODO: 1. Mahlzeit_ |
-| Mittag, Mittagessen | `lunch` | _TODO: 2. Mahlzeit_ |
-| Abend, Abendessen | `dinner` | _TODO: 3. Mahlzeit_ |
-| Snack, Snacks, Zwischenmahlzeit | `snacks` | Snacks (bestätigt 2026-09-16) |
+| Frühstück, morgens | `breakfast` | breakfast |
+| Mittag, Mittagessen | `lunch` | lunch |
+| Abend, Abendessen | `dinner` | dinner |
+| Snack, Snacks, Zwischenmahlzeit | `snacks` | snacks |
+
+Das Konto benutzt die englischen Standardnamen. Deshalb darf `meal` auch bei
+`fitness_delete_food` mitgegeben werden, der Namensfilter passt.
 
 Fehlt die Mahlzeit im Text, aus der lokalen Uhrzeit ableiten und im Ergebnis
 nennen: bis 10:30 Frühstück, 10:30 bis 14:30 Mittag, 14:30 bis 17:30 Snack,
@@ -111,8 +114,8 @@ richtigen Mahlzeit stehen. Ausgeben:
 
 - „/mahlzeit rückgängig" oder „lösch die letzte Mahlzeit": Einträge der
   letzten Buchung per `fitness_delete_food(query=<Name>, date=<Datum>)`
-  entfernen, `meal` weglassen (der Filter vergleicht englische Namen). Bei
-  „matches multiple" den genaueren Namen aus der Fehlermeldung nehmen.
+  entfernen, `meal` mitgeben, um Duplikate in anderen Mahlzeiten zu schonen.
+  Bei „matches multiple" den genaueren Namen aus der Fehlermeldung nehmen.
 - Mengenänderung: `fitness_delete_food` + `fitness_log_food`, nicht
   `fitness_modify_food` (nicht atomar).
 
