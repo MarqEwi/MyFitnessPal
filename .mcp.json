@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "myfitnesspal": {
-      "command": "uvx",
-      "args": ["--python", "3.12", "mfp-mcp"],
+      "command": "uv",
+      "args": ["run", "--python", "3.12", "--with", "mfp-mcp==0.3.0", "python", "scripts/mfp_session.py", "serve"],
       "env": {
         "MFP_USERNAME": "MarqEwi",
         "MFP_COOKIE": "${MFP_COOKIE:-}"
