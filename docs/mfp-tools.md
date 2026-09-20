@@ -177,6 +177,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | Ziele lesen über `/v2/nutrient-goals` (`scripts/mfp_goals.py`) | OK | Ziel 1803 kcal, E 216 g, KH 129 g, F 47 g, Ballaststoffe 38 g, Zucker 107 g, Natrium 2300 mg; Mahlzeit-Budgets 541/541/541/180 kcal |
 | 2026-09-17 | Frische Cloud-Sitzung: MFP_COOKIE aus Umgebung, fitness_get_day + mfp_goals.py | OK (nach Fix) | `fitness_get_day` OK (181 kcal am Tag). `mfp_goals.py` brach zunächst mit „couldn't read your MyFitnessPal profile" ab, weil `MFP_USERNAME` nur dem MCP-Server über `.mcp.json` mitgegeben wird; seit Commit danach setzen alle Skripte den Benutzernamen selbst |
 | 2026-09-20 | Supplement-Stack: 4 eigene Lebensmittel, 4 gespeicherte Mahlzeiten „Supps …" über Zwischenablage 2020-01-01 | OK | Token aus Inkognito-Session; Zwischenablage danach leer |
+| 2026-09-20 | Session-Messung: Rotation entwertet alte Tokens nicht (T0 90 min nach Ausstellung, 80 min nach Rotation nutzbar); reCAPTCHA sperrt Passwort-Login; Keepalive-Routine stündlich eingerichtet. Token in `MFP_COOKIE` gesetzt am 2026-09-20 | OK | Idle-Grenze wird noch gemessen |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 

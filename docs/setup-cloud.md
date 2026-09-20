@@ -70,6 +70,16 @@ Die Skill zeigt die Tabelle mit kcal und Makros, fragt „So eintragen?" und
 schreibt erst nach „ja" ins Tagebuch. Auch ohne `/mahlzeit` geht es, z. B.
 „Was habe ich gestern gegessen?" oder „Lösch den Lachs von heute Abend".
 
+## Keepalive-Routine (seit 2026-09-20)
+
+Routine „MFP-Keepalive: MyFitnessPal-Session am Leben halten"
+(`trig_01QyUfsyAWZYR1LrqHv22JVx`), stündlich um :28 UTC, eigene Cloud-Sitzung.
+Sie ruft `scripts/mfp_session.py status` zweimal im Abstand von 27 Minuten auf
+(Token aus `MFP_COOKIE`), damit die Session nie an Inaktivität stirbt. Antwort
+`KEEPALIVE OK` heißt alles gut; `KEEPALIVE FEHLER` kommt als Push-Nachricht und
+beschreibt, wie ein neues Cookie eingetragen wird. Verwalten unter
+<https://claude.ai/code> → Routines.
+
 ## Wenn die Session abläuft (etwa alle 30 Tage)
 
 Die Werkzeuge antworten dann mit „session expired or not connected". Dann:
