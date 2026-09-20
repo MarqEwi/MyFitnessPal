@@ -99,40 +99,33 @@ interpretiert. Für deutsche Etiketten `country_code="DE"` und Netto-KH senden.
 
 Kosmetik: Ein Portionswert wie 1,6 g erscheint in der Mahlzeiten-Liste als Bruch (`3602879701896397/2251799813685248 g`); Abhilfe wäre eine Portion „1 Portion (1,6 g)".
 
-## 4b. Warum Tokens starben, und die Lösung (2026-09-20)
+## 4b. Session-Lebensdauer: Messungen und Lösung (2026-09-20)
 
-Befund aus Messungen an drei Tokens:
+Gesichert (alle Nutzbarkeits-Checks über den Bibliotheksweg `build_client`,
+ein roher GET auf `/user/auth_token` antwortet **immer** 302 und taugt nicht):
 
-- `__Secure-next-auth.session-token` ist ein NextAuth-JWE mit 30 Tagen Laufzeit.
-  Darin steckt ein MFP-Zugangstoken mit kurzer Laufzeit (Stunden). Ist es
-  abgelaufen, antworten `/user/auth_token` und die Tagebuchseiten mit 302 zum
-  Login, obwohl `/api/auth/session` weiterhin 200 mit Benutzerdaten liefert.
-- `/api/auth/session` stellt ein neues Session-Token aus, erneuert den inneren
-  Zugang aber nur, wenn der Client auch das Cookie **`refresh-token-data`**
-  mitschickt. Genau dieses Cookie fehlte bei allen bisherigen Kopien (nur das
-  Session-Token aus dem Application-Tab). Ergebnis: neue Tokens ohne Wirkung,
-  Tagebuch weiterhin 302, nach 1 bis 2 Tagen ist die Session ganz weg.
-- Der Browser hat `refresh-token-data` und verlängert damit still; deshalb
-  bleibt Chrome eingeloggt, während die Kopie stirbt.
+- `GET /api/auth/session` mit einem gültigen Session-Token liefert ein neues
+  Session-Token (Set-Cookie, 30 Tage). **Das alte Token bleibt dabei gültig**;
+  mehrfache Rotationen aus demselben Token liefern jeweils nutzbare Tokens.
+  Es gibt also keine „Kette mit nur einem Halter".
+- `refresh-token-data` ist nur ein kurzlebiges Login-Hilfs-Cookie; der Browser
+  hat es nach dem Login nicht mehr. Es ist **nicht** nötig.
+- Passwort-Login über `POST /api/auth/callback/credentials` ist durch Google
+  reCAPTCHA gesperrt (`RecaptchaFailed`). Kein Weg für Werkzeuge.
+- Tokens starben bisher an **Zeit ohne Nutzung**: ein Token vom 17.09. (normales
+  Chrome) war am 19.09. weg (`/api/auth/session` liefert dann `{}`), ein
+  Inkognito-Token von 07:26 nach ca. 80 Minuten ohne Aufruf. Ein laufend
+  genutztes Token (Aufruf alle 3 Minuten) lebte über eine Stunde nach seiner
+  Rotation weiter. Ob die Grenze bei ca. 1 Stunde Inaktivität liegt oder ob
+  eine Rotation das alte Token verzögert entwertet, wird gerade gemessen
+  (Token 3 idle vs. T0 genutzt).
 
-Lösung, umgesetzt in `scripts/mfp_session.py`:
-
-1. **Kompletten Cookie-Header** übernehmen (Network-Tab, Request Headers,
-   `Cookie:`), nicht nur das Session-Token. `mfp-mcp auth` und `MFP_COOKIE`
-   akzeptieren den ganzen Header.
-2. `mfp_session.py serve` startet `mfp-mcp`, prüft vorher den Zugang, verlängert
-   bei Bedarf über `/api/auth/session` mit dem vollen Cookie-Satz, prüft, dass das
-   Ergebnis wirklich nutzbar ist, und speichert es in `cookies.json`. Bei
-   Auth-Fehlern im Betrieb passiert dasselbe automatisch (Hook in
-   `run_with_refresh` von `mfp-mcp`).
-3. `.mcp.json` und die User-Scope-Registrierung auf dem PC starten den Wrapper
-   statt `uvx mfp-mcp` direkt.
-
-Offen (wird am ersten vollen Cookie-Satz gemessen): ob `refresh-token-data`
-bei jeder Verlängerung rotiert und alt dann ungültig ist. Falls ja, braucht die
-Cloud einen persistenten Ablageort für den Cookie-Satz (Umgebungsvariablen sind
-statisch); ein Git-Repo als Ablage wurde verworfen (Zugangsdaten gehören nicht in
-Git). Auf dem PC hält `cookies.json` die Kette in jedem Fall zusammen.
+Lösung in `scripts/mfp_session.py`: Beim Start und bei Auth-Fehlern wird die
+Session über `/api/auth/session` verlängert und geprüft; der Server läuft über
+den Wrapper (`serve`). Geplant: eine Cloud-Routine „MFP-Keepalive", die die
+Session regelmäßig anfasst, damit sie nie an Inaktivität stirbt; Takt nach
+Messergebnis. Verbleibender Handgriff: alle 30 Tage ein neues Cookie, weil das
+Token in der Umgebungsvariable eine harte Laufzeit hat.
 
 Vorgesehener Inhalt von `.mcp.json` (Umstellung steht noch aus):
 
