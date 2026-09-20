@@ -97,10 +97,12 @@ Step 3 "Session-Cookie aus Chrome hinterlegen"
 $cookiePath = uv run --quiet --python $UvPython --with $Package python -c "from myfitnesspal_mcp import config; print(config.cookies_path())"
 if (-not $SkipAuth) {
     Write-Host @"
-  1. In Chrome auf https://www.myfitnesspal.com einloggen.
-  2. F12 -> Application -> Storage -> Cookies -> https://www.myfitnesspal.com
-  3. Wert von  __Secure-next-auth.session-token  kopieren.
-  4. Unten bei 'Paste cookie' einfuegen (Rechtsklick), Enter.
+  1. In Chrome ein Inkognito-Fenster oeffnen (Strg+Umschalt+N), dort auf https://www.myfitnesspal.com einloggen.
+  2. F12 -> Reiter Network (Netzwerk) -> Seite neu laden (F5) -> oben den ersten Eintrag 'www.myfitnesspal.com' anklicken
+  3. Rechts unter 'Request Headers' die Zeile 'Cookie:' suchen, Rechtsklick auf den Wert -> 'Copy value'.
+     Wichtig: den KOMPLETTEN Cookie-Header kopieren (enthaelt __Secure-next-auth.session-token UND refresh-token-data).
+     Nur das Session-Token allein laeuft nach wenigen Stunden ab und kann nicht verlaengert werden.
+  4. Unten bei 'Paste cookie' einfuegen (Rechtsklick), Enter. Danach das Inkognito-Fenster schliessen, nicht ausloggen.
      Fragt das Tool nach dem Benutzernamen: $Username
 "@
     $env:MFP_USERNAME = $Username
@@ -117,11 +119,9 @@ if (Test-Path $cookiePath) {
 # ---------------------------------------------------------------- 4. In Claude Code registrieren
 Step 4 "MCP-Server in Claude Code registrieren (User-Scope)"
 claude mcp remove myfitnesspal -s user 2>$null | Out-Null
-if ($AutoRefresh) {
-    claude mcp add --scope user myfitnesspal -e "MFP_USERNAME=$Username" -- uvx --python 3.12 --from "mfp-mcp[autorefresh]" mfp-mcp
-} else {
-    claude mcp add --scope user myfitnesspal -e "MFP_USERNAME=$Username" -- uvx --python 3.12 mfp-mcp
-}
+# Wrapper scripts\mfp_session.py: verlaengert die Session selbst (voller Cookie-Satz inkl. refresh-token-data)
+$wrapper = Join-Path $RepoRoot "scripts\mfp_session.py"
+claude mcp add --scope user myfitnesspal -e "MFP_USERNAME=$Username" -- uv run --python 3.12 --with $Package python "$wrapper" serve
 if ($LASTEXITCODE -ne 0) { Fail "claude mcp add schlug fehl" }
 $status = (claude mcp get myfitnesspal 2>&1) | Out-String
 if ($status -match "Connected") { Ok "myfitnesspal: Connected" } else { Write-Host $status; Fail "Server nicht verbunden" }

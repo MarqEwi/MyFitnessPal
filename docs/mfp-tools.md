@@ -99,6 +99,48 @@ interpretiert. Für deutsche Etiketten `country_code="DE"` und Netto-KH senden.
 
 Kosmetik: Ein Portionswert wie 1,6 g erscheint in der Mahlzeiten-Liste als Bruch (`3602879701896397/2251799813685248 g`); Abhilfe wäre eine Portion „1 Portion (1,6 g)".
 
+## 4b. Warum Tokens starben, und die Lösung (2026-09-20)
+
+Befund aus Messungen an drei Tokens:
+
+- `__Secure-next-auth.session-token` ist ein NextAuth-JWE mit 30 Tagen Laufzeit.
+  Darin steckt ein MFP-Zugangstoken mit kurzer Laufzeit (Stunden). Ist es
+  abgelaufen, antworten `/user/auth_token` und die Tagebuchseiten mit 302 zum
+  Login, obwohl `/api/auth/session` weiterhin 200 mit Benutzerdaten liefert.
+- `/api/auth/session` stellt ein neues Session-Token aus, erneuert den inneren
+  Zugang aber nur, wenn der Client auch das Cookie **`refresh-token-data`**
+  mitschickt. Genau dieses Cookie fehlte bei allen bisherigen Kopien (nur das
+  Session-Token aus dem Application-Tab). Ergebnis: neue Tokens ohne Wirkung,
+  Tagebuch weiterhin 302, nach 1 bis 2 Tagen ist die Session ganz weg.
+- Der Browser hat `refresh-token-data` und verlängert damit still; deshalb
+  bleibt Chrome eingeloggt, während die Kopie stirbt.
+
+Lösung, umgesetzt in `scripts/mfp_session.py`:
+
+1. **Kompletten Cookie-Header** übernehmen (Network-Tab, Request Headers,
+   `Cookie:`), nicht nur das Session-Token. `mfp-mcp auth` und `MFP_COOKIE`
+   akzeptieren den ganzen Header.
+2. `mfp_session.py serve` startet `mfp-mcp`, prüft vorher den Zugang, verlängert
+   bei Bedarf über `/api/auth/session` mit dem vollen Cookie-Satz, prüft, dass das
+   Ergebnis wirklich nutzbar ist, und speichert es in `cookies.json`. Bei
+   Auth-Fehlern im Betrieb passiert dasselbe automatisch (Hook in
+   `run_with_refresh` von `mfp-mcp`).
+3. `.mcp.json` und die User-Scope-Registrierung auf dem PC starten den Wrapper
+   statt `uvx mfp-mcp` direkt.
+
+Offen (wird am ersten vollen Cookie-Satz gemessen): ob `refresh-token-data`
+bei jeder Verlängerung rotiert und alt dann ungültig ist. Falls ja, braucht die
+Cloud einen persistenten Ablageort für den Cookie-Satz (Umgebungsvariablen sind
+statisch); ein Git-Repo als Ablage wurde verworfen (Zugangsdaten gehören nicht in
+Git). Auf dem PC hält `cookies.json` die Kette in jedem Fall zusammen.
+
+Vorgesehener Inhalt von `.mcp.json` (Umstellung steht noch aus):
+
+```json
+"command": "uv",
+"args": ["run", "--python", "3.12", "--with", "mfp-mcp==0.3.0", "python", "scripts/mfp_session.py", "serve"]
+```
+
 ## 5. Session-Cookie
 
 - Name: `__Secure-next-auth.session-token`, Domain `.myfitnesspal.com`.
