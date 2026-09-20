@@ -69,8 +69,14 @@ def _jar_to_dict(s: cffi_requests.Session, base: dict[str, str]) -> dict[str, st
 
 
 def cookies_alive(cookies: dict[str, str]) -> bool:
-    r = _session_with(cookies).get(CHECK_URL, allow_redirects=False, timeout=30)
-    return r.status_code == 200
+    """Prüft über denselben Weg wie der Server (python-myfitnesspal-Client mit
+    Bearer-Token-Abruf). Ein roher GET auf /user/auth_token antwortet auch bei
+    gültiger Session mit 302 und taugt nicht als Prüfung."""
+    try:
+        mfp_client.build_client(cookies)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def refresh_cookies(cookies: dict[str, str]) -> dict[str, str] | None:
