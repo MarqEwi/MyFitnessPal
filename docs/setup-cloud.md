@@ -74,8 +74,11 @@ schreibt erst nach „ja" ins Tagebuch. Auch ohne `/mahlzeit` geht es, z. B.
 
 Routine „MFP-Keepalive: MyFitnessPal-Session am Leben halten"
 (`trig_01QyUfsyAWZYR1LrqHv22JVx`), stündlich um :28 UTC, eigene Cloud-Sitzung.
-Sie ruft `scripts/mfp_session.py status` zweimal im Abstand von 27 Minuten auf
-(Token aus `MFP_COOKIE`), damit die Session nie an Inaktivität stirbt. Antwort
+Sie ruft `scripts/mfp_session.py status` die ganze Stunde über alle 9 Minuten
+auf (Token aus `MFP_COOKIE`), weil eine MFP-Session nach etwa 30 Minuten ohne
+Aufruf stirbt. Nach dem Eintragen eines neuen Tokens: innerhalb von 20 Minuten
+in einer Claude-Sitzung „Keepalive jetzt starten" schreiben, damit die Routine
+sofort übernimmt. Antwort
 `KEEPALIVE OK` heißt alles gut; `KEEPALIVE FEHLER` kommt als Push-Nachricht und
 beschreibt, wie ein neues Cookie eingetragen wird. Verwalten unter
 <https://claude.ai/code> → Routines.

@@ -112,19 +112,22 @@ ein roher GET auf `/user/auth_token` antwortet **immer** 302 und taugt nicht):
   hat es nach dem Login nicht mehr. Es ist **nicht** nötig.
 - Passwort-Login über `POST /api/auth/callback/credentials` ist durch Google
   reCAPTCHA gesperrt (`RecaptchaFailed`). Kein Weg für Werkzeuge.
-- Tokens starben bisher an **Zeit ohne Nutzung**: ein Token vom 17.09. (normales
-  Chrome) war am 19.09. weg (`/api/auth/session` liefert dann `{}`), ein
-  Inkognito-Token von 07:26 nach ca. 80 Minuten ohne Aufruf. Ein laufend
-  genutztes Token (Aufruf alle 3 Minuten) lebte über eine Stunde nach seiner
-  Rotation weiter. Ob die Grenze bei ca. 1 Stunde Inaktivität liegt oder ob
-  eine Rotation das alte Token verzögert entwertet, wird gerade gemessen
-  (Token 3 idle vs. T0 genutzt).
+- **Eine Session stirbt nach etwa 30 Minuten ohne Aufruf.** Gemessen am
+  20.09.: Token 3 überlebte 28 Minuten Ruhe, T0 und Token 3 waren nach gut
+  zwei Stunden Ruhe tot (`/api/auth/session` liefert dann `{}`), ein
+  laufend genutztes Token (Aufruf alle 3 Minuten) lebte über 90 Minuten und
+  über seine Rotation hinweg. Frühere Fälle (Token vom 17.09. nach zwei
+  Tagen, Inkognito-Token von 07:26 nach 80 Minuten) passen dazu. Ein Aufruf
+  ist jeder Zugriff, der den Bearer-Token holt (`build_client`).
 
 Lösung in `scripts/mfp_session.py`: Beim Start und bei Auth-Fehlern wird die
-Session über `/api/auth/session` verlängert und geprüft; der Server läuft über
-den Wrapper (`serve`). Geplant: eine Cloud-Routine „MFP-Keepalive", die die
-Session regelmäßig anfasst, damit sie nie an Inaktivität stirbt; Takt nach
-Messergebnis. Verbleibender Handgriff: alle 30 Tage ein neues Cookie, weil das
+Session geprüft, notfalls über `/api/auth/session` verlängert, und ein lebendes
+Login aus `MFP_COOKIE` übernommen; der Server läuft über den Wrapper (`serve`).
+Die Cloud-Routine „MFP-Keepalive" (stündlich, `trig_01QyUfsyAWZYR1LrqHv22JVx`)
+fasst die Session in jeder Stunde alle 9 Minuten an, damit sie nie 30 Minuten
+ruht. Nach dem Eintragen eines neuen Tokens muss innerhalb von 20 Minuten ein
+Aufruf erfolgen (Routine manuell starten), sonst stirbt es vor dem ersten
+Keepalive. Verbleibender Handgriff: alle 30 Tage ein neues Cookie, weil das
 Token in der Umgebungsvariable eine harte Laufzeit hat.
 
 Vorgesehener Inhalt von `.mcp.json` (Umstellung steht noch aus):

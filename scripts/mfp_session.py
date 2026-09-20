@@ -102,20 +102,39 @@ def persist(cookies: dict[str, str]) -> None:
     mfp_client.reset()
 
 
+def candidate_cookie_sets() -> list[dict[str, str]]:
+    """Alle bekannten Cookie-Sätze, zuerst cookies.json, dann MFP_COOKIE (falls
+    abweichend). Die Umgebung kann ein neueres Login enthalten als die Datei."""
+    sets = []
+    saved = auth._read_saved().get("cookies") or {}
+    if saved.get(auth.SESSION_COOKIE):
+        sets.append(dict(saved))
+    env = config.cookie_env()
+    if env:
+        parsed = auth.parse_cookie_input(env)
+        if parsed.get(auth.SESSION_COOKIE) and all(parsed.get(auth.SESSION_COOKIE) != s.get(auth.SESSION_COOKIE) for s in sets):
+            sets.append(parsed)
+    return sets
+
+
 def refresh_and_persist(reason: str = "") -> bool:
-    cookies = current_cookies()
-    if not cookies:
+    sets = candidate_cookie_sets()
+    if not sets:
         log.error("keine Cookies: weder cookies.json noch MFP_COOKIE")
         return False
-    if cookies_alive(cookies):
-        return True
-    new = refresh_cookies(cookies)
-    if not new:
-        log.error("Verlängerung fehlgeschlagen%s", f" ({reason})" if reason else "")
-        return False
-    persist(new)
-    log.info("Session verlängert%s", f" ({reason})" if reason else "")
-    return True
+    for cookies in sets:
+        if cookies_alive(cookies):
+            if cookies is not sets[0]:
+                persist(cookies)  # Umgebung hatte das lebende Login: übernehmen
+            return True
+    for cookies in sets:
+        new = refresh_cookies(cookies)
+        if new:
+            persist(new)
+            log.info("Session verlängert%s", f" ({reason})" if reason else "")
+            return True
+    log.error("Verlängerung fehlgeschlagen%s: alle bekannten Sessions abgelaufen (MFP-Session stirbt nach ca. 30 min ohne Aufruf)", f" ({reason})" if reason else "")
+    return False
 
 
 def cmd_status() -> int:
