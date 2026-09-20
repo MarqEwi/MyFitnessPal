@@ -21,9 +21,13 @@ durch (Startseite 200, geschützte Seiten leiten ohne Challenge zum Login um).
 
 ## Einmalig: Cookie in der Cloud-Umgebung hinterlegen
 
-1. Am PC in Chrome bei myfitnesspal.com eingeloggt sein. `F12` →
-   **Application** → **Cookies** → `https://www.myfitnesspal.com` → Wert von
-   `__Secure-next-auth.session-token` kopieren.
+1. Am PC in Chrome ein **Inkognito-Fenster** öffnen (`Strg+Umschalt+N`),
+   dort bei myfitnesspal.com einloggen. `F12` → **Application** →
+   **Cookies** → `https://www.myfitnesspal.com` → Wert von
+   `__Secure-next-auth.session-token` kopieren. Danach das Inkognito-Fenster
+   **schließen, nicht ausloggen**. Grund: Ein Token aus dem normalen Chrome
+   stirbt, sobald Chrome oder die App die Session rotieren (beobachtet nach
+   1 Stunde bzw. 2 Tagen); die Inkognito-Session rotiert niemand.
 2. Im Browser <https://claude.ai/code> öffnen. Direkt **über dem
    Eingabefeld** steht eine Schaltfläche mit Wolken-Symbol und dem Namen der
    aktuellen Umgebung, meist **Default**. Darauf klicken. Im aufklappenden

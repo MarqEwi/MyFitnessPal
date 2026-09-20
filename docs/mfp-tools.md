@@ -87,12 +87,27 @@ Stolperfalle laut AdamWalt: `country_code` entscheidet, ob MFP den
 Kohlenhydratwert als Netto (EU, Ballaststoffe kommen dazu) oder Brutto (US)
 interpretiert. Für deutsche Etiketten `country_code="DE"` und Netto-KH senden.
 
+## 4a. Gespeicherte Mahlzeiten und eigene Lebensmittel loggen (2026-09-20 verifiziert)
+
+| Aktion | Endpunkt | Anmerkung |
+| --- | --- | --- |
+| Gespeicherte Mahlzeiten listen | `GET https://www.myfitnesspal.com/api/services/users/meals/mine` | JSON: `description`, `meal_id`, `foods[]` |
+| Gespeicherte Mahlzeit löschen | `DELETE …/api/services/users/meals/delete/<meal_id>` (aus dem Web-Client-JS, nicht getestet) | |
+| Gespeicherte Mahlzeit ins Tagebuch kopieren | `…/api/services/diary/copy_meal` (aus dem Web-Client-JS, Payload noch nicht ermittelt) | Kandidat für die Skill („Supps Frühstück eintragen") |
+| Gespeicherte Mahlzeit **anlegen** | nur aus einem Tagebuch-Tag: `GET /meal/new?date=YYYY-MM-DD&meal=<0..3>` (Formular mit `authenticity_token`) → `POST /meal/create` mit `authenticity_token`, `date`, `meal_id`, `meal[description]` | speichert alle Einträge dieses Slots an diesem Tag; Vorgehen: Zwischenablage-Datum (2020-01-01) befüllen, speichern, Einträge löschen |
+| Eigenes (privates) Lebensmittel loggen | `POST https://api.myfitnesspal.com/v2/diary` mit `{"items":[{"type":"food_entry","date":…,"meal_name":"Breakfast","servings":1,"food":{"id":<v2-id>,"version":<version>},"serving_size":{"value","unit","nutrition_multiplier"}}]}` | private Lebensmittel erscheinen **nicht** in der Legacy-Suche, `/food/add` scheidet aus; `serving_size` darf nur diese drei Felder enthalten (sonst 400 „unpermitted parameters") |
+
+Kosmetik: Ein Portionswert wie 1,6 g erscheint in der Mahlzeiten-Liste als Bruch (`3602879701896397/2251799813685248 g`); Abhilfe wäre eine Portion „1 Portion (1,6 g)".
+
 ## 5. Session-Cookie
 
 - Name: `__Secure-next-auth.session-token`, Domain `.myfitnesspal.com`.
-- Gültigkeit: etwa 30 Tage ab letztem Login; jede Nutzung im Browser
-  verlängert die Browser-Session, das kopierte Token läuft aber zum
-  ursprünglichen Ablaufdatum aus.
+- Gültigkeit: **beobachtet 2026-09-17/19: zwei aus dem normalen Chrome
+  kopierte Tokens starben nach ca. 1 Stunde bzw. 2 Tagen**, sobald Chrome
+  oder die App die Session rotiert hatten. Abhilfe: Token aus einer
+  eigenen Session nehmen (Inkognito-Fenster einloggen, Cookie kopieren,
+  Fenster schließen ohne Logout). Diese Session rotiert niemand.
+  Lebensdauer dieses Wegs wird noch beobachtet (Token vom 2026-09-20).
 - Ablage in der Cloud: Umgebungsvariable `MFP_COOKIE` der Claude-Code-Umgebung,
   von `.mcp.json` an den Server durchgereicht (siehe `docs/setup-cloud.md`).
 - Ablage auf dem PC durch `mfp-mcp auth`: `%LOCALAPPDATA%\myfitnesspal-mcp\myfitnesspal-mcp\cookies.json`
@@ -126,6 +141,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | Ende-zu-Ende aus der Cloud-Sitzung über die MCP-Werkzeuge: `fitness_get_day`, `fitness_search_food` („Skyr Milbona"), `fitness_log_food` (300 g Frühstück), Gegenprüfung | OK | Eintrag „Generic Skyr Milbona - Skyr Milbona , 300 gram", 186 kcal, E 33 g, KH 12 g, F 1 g (MFP rundet 0,6 g auf 1 g); Cloudflare hat die Cloud-IP nicht blockiert |
 | 2026-09-17 | Ziele lesen über `/v2/nutrient-goals` (`scripts/mfp_goals.py`) | OK | Ziel 1803 kcal, E 216 g, KH 129 g, F 47 g, Ballaststoffe 38 g, Zucker 107 g, Natrium 2300 mg; Mahlzeit-Budgets 541/541/541/180 kcal |
 | 2026-09-17 | Frische Cloud-Sitzung: MFP_COOKIE aus Umgebung, fitness_get_day + mfp_goals.py | OK (nach Fix) | `fitness_get_day` OK (181 kcal am Tag). `mfp_goals.py` brach zunächst mit „couldn't read your MyFitnessPal profile" ab, weil `MFP_USERNAME` nur dem MCP-Server über `.mcp.json` mitgegeben wird; seit Commit danach setzen alle Skripte den Benutzernamen selbst |
+| 2026-09-20 | Supplement-Stack: 4 eigene Lebensmittel, 4 gespeicherte Mahlzeiten „Supps …" über Zwischenablage 2020-01-01 | OK | Token aus Inkognito-Session; Zwischenablage danach leer |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
