@@ -11,7 +11,7 @@ Ressourcen: Image ca. 250 MB, RAM Server ca. 80 MB, Keepalive ca. 60 MB
 
 ## Einrichtung (Kurzfassung, Details im NAS-Thread)
 
-1. Ordner anlegen: `/volume1/Grundlagen/mfp/{sync,keys,daten}`, Eigentümer `1001:10`,
+1. Ordner anlegen: `/volume1/Grundlagen/MyFitnessPal/{sync,keys,daten}`, Eigentümer `1001:10`,
    `keys` mit `chmod 700`.
 2. Diesen Ordner (`nas/mfp/`) plus `scripts/mfp_session.py` nach `sync/` übertragen
    (Zeilenenden auf LF bereinigen, siehe NAS-Regeln).
