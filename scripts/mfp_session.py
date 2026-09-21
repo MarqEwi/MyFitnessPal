@@ -8,8 +8,9 @@ wenigen Stunden ab; Tagebuch-Aufrufe scheitern dann mit 302/403. Ein Aufruf von
 ein frisches Cookie (Set-Cookie, wieder 30 Tage). Genau das macht dieses Skript:
 
     python scripts/mfp_session.py refresh   # Token verlängern und speichern
-    python scripts/mfp_session.py serve     # verlängern, dann mfp-mcp starten;
+    python scripts/mfp_session.py serve     # verlängern, dann mfp-mcp starten (stdio);
                                             # bei Auth-Fehlern im Betrieb erneut verlängern
+    python scripts/mfp_session.py serve --http --host 0.0.0.0 --port 8484   # HTTP-Modus (NAS)
     python scripts/mfp_session.py status    # lebt die Session?
 
 Quelle des Start-Tokens (erste Fundstelle gewinnt): Datei cookies.json von
@@ -177,7 +178,8 @@ def cmd_serve() -> int:
     mfp_refresh.profile_seeded = lambda: True
 
     from myfitnesspal_mcp import cli
-    sys.argv = [sys.argv[0], "serve"]
+    # weitere Argumente (z. B. --http --host 0.0.0.0 --port 8484) an mfp-mcp durchreichen
+    sys.argv = [sys.argv[0], "serve", *sys.argv[2:]]
     cli.main()
     return 0
 

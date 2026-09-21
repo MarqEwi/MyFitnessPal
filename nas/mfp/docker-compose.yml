@@ -1,0 +1,46 @@
+# MyFitnessPal-MCP auf der NAS (STEVENAS, ARM64). Projektordner-Vorschlag: /volume1/Grundlagen/mfp
+#   /volume1/Grundlagen/mfp/sync/   -> diese Datei, Dockerfile, keepalive.sh, .env
+#   /volume1/Grundlagen/mfp/keys/   -> cookies.json (Session), chmod 600, Eigentuemer 1001:10
+#   /volume1/Grundlagen/mfp/daten/  -> SQLite-Cache des Servers
+# Start:  docker compose up -d --build     Logs: docker compose logs -f
+# Erstes Login: docker compose run --rm -it mfp-server python /app/mfp_session.py status  (oder: mfp-mcp auth < token.txt)
+services:
+  mfp-server:
+    build:
+      context: ../../..          # Repo-Wurzel, damit scripts/mfp_session.py kopiert werden kann
+      dockerfile: nas/mfp/Dockerfile
+    image: mfp-mcp-session:0.3.0
+    container_name: mfp-server
+    user: "1001:10"
+    restart: unless-stopped
+    mem_limit: 256m
+    environment:
+      MFP_USERNAME: MarqEwi
+      MFP_COOKIE: ${MFP_COOKIE:-}     # nur fuer das allererste Login; danach lebt die Session in keys/cookies.json
+    volumes:
+      - /volume1/Grundlagen/mfp/keys:/config/myfitnesspal-mcp
+      - /volume1/Grundlagen/mfp/daten:/data
+    ports:
+      - "8484:8484"                 # LAN: http://192.168.2.101:8484/mcp  (vorher pruefen, dass 8484 frei ist)
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "3" }
+
+  mfp-keepalive:
+    image: mfp-mcp-session:0.3.0
+    container_name: mfp-keepalive
+    user: "1001:10"
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on: [mfp-server]
+    environment:
+      MFP_USERNAME: MarqEwi
+      KEEPALIVE_INTERVAL: "600"
+    volumes:
+      - /volume1/Grundlagen/mfp/keys:/config/myfitnesspal-mcp
+      - /volume1/Grundlagen/mfp/daten:/data
+      - ./keepalive.sh:/app/keepalive.sh:ro
+    entrypoint: ["sh", "/app/keepalive.sh"]
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "3" }
