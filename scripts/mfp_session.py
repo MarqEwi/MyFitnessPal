@@ -103,18 +103,19 @@ def persist(cookies: dict[str, str]) -> None:
     mfp_client.reset()
 
 
-def candidate_cookie_sets() -> list[dict[str, str]]:
-    """Alle bekannten Cookie-Sätze, zuerst cookies.json, dann MFP_COOKIE (falls
-    abweichend). Die Umgebung kann ein neueres Login enthalten als die Datei."""
-    sets = []
+def candidate_cookie_sets() -> list[tuple[str, dict[str, str]]]:
+    """Alle bekannten Cookie-Sätze mit Herkunft: zuerst cookies.json ("datei"),
+    dann MFP_COOKIE ("umgebung"), falls abweichend. Die Umgebung kann ein
+    neueres Login enthalten als die Datei."""
+    sets: list[tuple[str, dict[str, str]]] = []
     saved = auth._read_saved().get("cookies") or {}
     if saved.get(auth.SESSION_COOKIE):
-        sets.append(dict(saved))
+        sets.append(("datei", dict(saved)))
     env = config.cookie_env()
     if env:
         parsed = auth.parse_cookie_input(env)
-        if parsed.get(auth.SESSION_COOKIE) and all(parsed.get(auth.SESSION_COOKIE) != s.get(auth.SESSION_COOKIE) for s in sets):
-            sets.append(parsed)
+        if parsed.get(auth.SESSION_COOKIE) and all(parsed.get(auth.SESSION_COOKIE) != s.get(auth.SESSION_COOKIE) for _, s in sets):
+            sets.append(("umgebung", parsed))
     return sets
 
 
@@ -123,12 +124,13 @@ def refresh_and_persist(reason: str = "") -> bool:
     if not sets:
         log.error("keine Cookies: weder cookies.json noch MFP_COOKIE")
         return False
-    for cookies in sets:
+    for source, cookies in sets:
         if cookies_alive(cookies):
-            if cookies is not sets[0]:
-                persist(cookies)  # Umgebung hatte das lebende Login: übernehmen
+            if source == "umgebung":
+                persist(cookies)  # lebendes Login aus der Umgebung in cookies.json übernehmen (auch bei leerer Datei)
+                log.info("Login aus MFP_COOKIE übernommen und gespeichert")
             return True
-    for cookies in sets:
+    for _source, cookies in sets:
         new = refresh_cookies(cookies)
         if new:
             persist(new)

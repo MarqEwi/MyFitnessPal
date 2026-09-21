@@ -55,7 +55,10 @@ Auf der NAS liegt alles flach in `sync/`, deshalb dort:
    Umgebungssatz selbst `sets[0]`, und die Bedingung `cookies is not sets[0]` greift nicht.
    Der Keepalive fand deshalb „keine Cookies vorhanden". Einmalig gelöst mit `bootstrap.py`
    (prüft das Token und schreibt es nach `cookies.json`). Die Datei bleibt für künftige
-   Neuaufsetzungen im `sync/`-Ordner liegen.
+   Neuaufsetzungen im `sync/`-Ordner liegen. **Im Repo behoben (21.09., Commit „mfp_session:
+   Login aus MFP_COOKIE auch bei leerer cookies.json übernehmen"):** `refresh_and_persist()`
+   merkt sich jetzt die Herkunft des Cookie-Satzes und speichert ein lebendes Login aus der
+   Umgebung immer. Beim nächsten Rebuild auf der NAS ist `bootstrap.py` überflüssig.
 2. **LAN-Zugriff schlug mit `421 Invalid Host header` fehl.** Das MCP-SDK lässt per
    DNS-Rebinding-Schutz nur `127.0.0.1`, `localhost` und `[::1]` als Host-Header zu.
    Gelöst über `MFP_ALLOWED_HOSTS=192.168.2.101:*,stevenas:*`, das die Vorgabe **ergänzt**
