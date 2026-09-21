@@ -182,6 +182,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-20 | Supplement-Stack: 4 eigene Lebensmittel, 4 gespeicherte Mahlzeiten „Supps …" über Zwischenablage 2020-01-01 | OK | Token aus Inkognito-Session; Zwischenablage danach leer |
 | 2026-09-20 | Session-Messung: Rotation entwertet alte Tokens nicht (T0 90 min nach Ausstellung, 80 min nach Rotation nutzbar); reCAPTCHA sperrt Passwort-Login; Keepalive-Routine stündlich eingerichtet. Token in `MFP_COOKIE` gesetzt am 2026-09-20 | OK | Idle-Grenze wird noch gemessen |
 | 2026-09-21 | Neues Token in `MFP_COOKIE` gesetzt (06:47 UTC), Keepalive-Routine sofort von Hand gestartet; 2 Pfirsiche fürs Frühstück eingetragen | OK | Token gesetzt am 2026-09-21; Verifikation der Routine um 08:00 UTC |
+| 2026-09-21 | Keepalive-Routine verifiziert: Cloud-Token lebte um 08:04 UTC, seit 07:17 nur von der Routine gehalten (Lauf 06:51–07:38, sechs Runden) | OK | Kosten pro Lauf ca. 0,75 USD (viele Turns); Prompt auf einen Hintergrund-Aufruf umgestellt, um Turns zu sparen |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
