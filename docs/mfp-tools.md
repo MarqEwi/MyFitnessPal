@@ -183,6 +183,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-20 | Session-Messung: Rotation entwertet alte Tokens nicht (T0 90 min nach Ausstellung, 80 min nach Rotation nutzbar); reCAPTCHA sperrt Passwort-Login; Keepalive-Routine stündlich eingerichtet. Token in `MFP_COOKIE` gesetzt am 2026-09-20 | OK | Idle-Grenze wird noch gemessen |
 | 2026-09-21 | Neues Token in `MFP_COOKIE` gesetzt (06:47 UTC), Keepalive-Routine sofort von Hand gestartet; 2 Pfirsiche fürs Frühstück eingetragen | OK | Token gesetzt am 2026-09-21; Verifikation der Routine um 08:00 UTC |
 | 2026-09-21 | Keepalive-Routine verifiziert: Cloud-Token lebte um 08:04 UTC, seit 07:17 nur von der Routine gehalten (Lauf 06:51–07:38, sechs Runden) | OK | Kosten pro Lauf ca. 0,75 USD (viele Turns); Prompt auf einen Hintergrund-Aufruf umgestellt, um Turns zu sparen |
+| 2026-09-21 | NAS-Server STEVENAS in Betrieb: Container `mfp-server` + `mfp-keepalive`, Port 8484, Image 351 MB, RAM 92 MB / 2,6 MB | OK | Keepalive meldet 10:16 „Tagebuch-Zugang: nutzbar" ohne Token in der `.env` (Session in `keys/cookies.json`). MCP-Handshake von außen: `serverInfo myfitnesspal 1.30.0`. Zwei Funde: `refresh_and_persist()` speichert ein lebendes Token aus `MFP_COOKIE` nicht, wenn `cookies.json` leer ist (einmalig per `bootstrap.py` gelöst); das MCP-SDK wies LAN-Zugriffe mit 421 „Invalid Host header" ab, gelöst über `MFP_ALLOWED_HOSTS` |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 

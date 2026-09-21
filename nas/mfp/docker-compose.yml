@@ -4,6 +4,11 @@
 #   /volume1/Grundlagen/MyFitnessPal/daten/  -> SQLite-Cache des Servers
 # Start:  docker compose up -d --build     Logs: docker compose logs -f
 # Erstes Login: docker compose run --rm -it mfp-server python /app/mfp_session.py status  (oder: mfp-mcp auth < token.txt)
+# Projektname fest vorgeben: Compose leitet ihn sonst vom Ordnernamen ab, und der heisst auf der NAS
+# ebenfalls "sync" wie /volume1/Grundlagen/training/sync. Beide Projekte waeren dann dieselbe Einheit –
+# ein "docker compose down" hier wuerde training-sync mit stoppen, "--remove-orphans" ihn loeschen.
+name: mfp
+
 services:
   mfp-server:
     build:
@@ -17,6 +22,10 @@ services:
     environment:
       MFP_USERNAME: MarqEwi
       MFP_COOKIE: ${MFP_COOKIE:-}     # nur fuer das allererste Login; danach lebt die Session in keys/cookies.json
+      # Das MCP-SDK laesst per DNS-Rebinding-Schutz nur localhost als Host-Header zu; ein Zugriff ueber
+      # die LAN-Adresse scheitert sonst mit 421 "Invalid Host header". Hier nur die NAS ergaenzen,
+      # die Vorgabe (127.0.0.1, localhost, [::1]) bleibt erhalten.
+      MFP_ALLOWED_HOSTS: ${MFP_ALLOWED_HOSTS:-}
     volumes:
       - /volume1/Grundlagen/MyFitnessPal/keys:/config/myfitnesspal-mcp
       - /volume1/Grundlagen/MyFitnessPal/daten:/data

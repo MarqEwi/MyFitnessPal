@@ -160,6 +160,32 @@ def cmd_refresh() -> int:
     return 0 if ok else 1
 
 
+def allow_extra_hosts() -> None:
+    """Trägt zusätzliche Host-Header in die Erlaubnisliste des HTTP-Transports ein.
+
+    Das MCP-SDK schützt gegen DNS-Rebinding und lässt nur 127.0.0.1, localhost und [::1]
+    als Host zu. Ein Aufruf über die LAN-Adresse der NAS scheitert deshalb mit
+    421 "Invalid Host header", bevor er den Server erreicht. MFP_ALLOWED_HOSTS nimmt
+    kommagetrennte Muster entgegen, z. B. "192.168.2.101:*,stevenas:*".
+
+    Die Vorgabe bleibt dabei erhalten: Der Schutz wird nicht abgeschaltet, sondern nur um
+    die genannten Adressen ergänzt. Ohne die Variable ändert sich nichts. Entschieden mit
+    dem Kontoinhaber am 21.09.2026 für den NAS-Betrieb im LAN."""
+    muster = [h.strip() for h in os.environ.get("MFP_ALLOWED_HOSTS", "").split(",") if h.strip()]
+    if not muster:
+        return
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    from myfitnesspal_mcp.server import mcp as mfp_mcp
+
+    vorgabe = TransportSecuritySettings()
+    mfp_mcp.settings.transport_security = TransportSecuritySettings(
+        allowed_hosts=[*vorgabe.allowed_hosts, *muster],
+        allowed_origins=[*vorgabe.allowed_origins, *(f"http://{m}" for m in muster)],
+    )
+    log.info("zusätzlich erlaubte Hosts: %s", ", ".join(muster))
+
+
 def cmd_serve() -> int:
     """Token verlängern, dann mfp-mcp starten. Der Server ruft bei Auth-Fehlern
     `refresh.refresh_session()` auf; das wird hier auf die HTTP-Verlängerung umgebogen."""
@@ -176,6 +202,8 @@ def cmd_serve() -> int:
     mfp_refresh.refresh_session = http_refresh_session
     mfp_refresh.available = lambda: True
     mfp_refresh.profile_seeded = lambda: True
+
+    allow_extra_hosts()
 
     from myfitnesspal_mcp import cli
     # weitere Argumente (z. B. --http --host 0.0.0.0 --port 8484) an mfp-mcp durchreichen

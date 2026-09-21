@@ -22,6 +22,11 @@ Neue Ordner und Klone auf dem PC des Benutzers immer unter
   wegen `lxml`): auf dem PC im User-Scope, in jeder Repo-Sitzung über
   `.mcp.json`, jeweils als `myfitnesspal`. Skill `/mahlzeit` liegt in
   `.claude/skills/mahlzeit/SKILL.md`.
+- Der MCP-Server läuft seit 21.09.2026 dauerhaft auf der NAS STEVENAS
+  (`http://192.168.2.101:8484/mcp`, Container `mfp-server` + `mfp-keepalive`,
+  Doku `nas/mfp/README.md`); der PC nutzt ihn in diesem Repo über den
+  local-Scope, der die `.mcp.json` überstimmt. Der lokale Wrapper im
+  User-Scope bleibt als Rückfallebene bestehen.
 - Ernährungsplan in `plan.json`: Trainingstag 2180 kcal / Ruhetag 1803 kcal,
   216 g Eiweiß fest; Ziele sollen erreicht, nicht unterschritten werden.
   Ohne Angabe im Text gilt Ruhetag (kurz sagen).
