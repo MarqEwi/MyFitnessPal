@@ -70,18 +70,20 @@ Die Skill zeigt die Tabelle mit kcal und Makros, fragt „So eintragen?" und
 schreibt erst nach „ja" ins Tagebuch. Auch ohne `/mahlzeit` geht es, z. B.
 „Was habe ich gestern gegessen?" oder „Lösch den Lachs von heute Abend".
 
-## Keepalive-Routine (seit 2026-09-20)
+## Keepalive: seit 21.09.2026 übernimmt die NAS
 
-Routine „MFP-Keepalive: MyFitnessPal-Session am Leben halten"
-(`trig_01QyUfsyAWZYR1LrqHv22JVx`), stündlich um :28 UTC, eigene Cloud-Sitzung.
-Sie ruft `scripts/mfp_session.py status` die ganze Stunde über alle 9 Minuten
-auf (Token aus `MFP_COOKIE`), weil eine MFP-Session nach etwa 30 Minuten ohne
-Aufruf stirbt. Nach dem Eintragen eines neuen Tokens: innerhalb von 20 Minuten
-in einer Claude-Sitzung „Keepalive jetzt starten" schreiben, damit die Routine
-sofort übernimmt. Antwort
-`KEEPALIVE OK` heißt alles gut; `KEEPALIVE FEHLER` kommt als Push-Nachricht und
-beschreibt, wie ein neues Cookie eingetragen wird. Verwalten unter
-<https://claude.ai/code> → Routines.
+Die Session lebt dauerhaft auf der NAS STEVENAS (`nas/mfp/README.md`); ihr
+Keepalive-Container fasst sie alle 10 Minuten an. `MFP_COOKIE` in der
+Cloud-Umgebung enthält ein Token **desselben Logins**, deshalb bleibt auch der
+Cloud-Zugang lebendig, ohne eigene Routine. Die stündliche Cloud-Routine
+„MFP-Keepalive" (`trig_01QyUfsyAWZYR1LrqHv22JVx`) ist deaktiviert und bleibt
+als Rückfallebene erhalten (unter <https://claude.ai/code> → Routines wieder
+einschaltbar, falls die NAS länger aus ist).
+
+Verbleibender Handgriff bis Phase 2 (Cloudflare Tunnel): Das Token in
+`MFP_COOKIE` hat eine harte Laufzeit von 30 Tagen (aktuell bis 21.10.2026).
+Vorher ein aktuelles Token aus `keys/cookies.json` auf der NAS in die
+Umgebungsvariable kopieren.
 
 ## Wenn die Session abläuft (etwa alle 30 Tage)
 

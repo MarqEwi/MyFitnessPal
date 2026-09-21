@@ -185,6 +185,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-21 | Keepalive-Routine verifiziert: Cloud-Token lebte um 08:04 UTC, seit 07:17 nur von der Routine gehalten (Lauf 06:51–07:38, sechs Runden) | OK | Kosten pro Lauf ca. 0,75 USD (viele Turns); Prompt auf einen Hintergrund-Aufruf umgestellt, um Turns zu sparen |
 | 2026-09-21 | NAS-Server STEVENAS in Betrieb: Container `mfp-server` + `mfp-keepalive`, Port 8484, Image 351 MB, RAM 92 MB / 2,6 MB | OK | Keepalive meldet 10:16 „Tagebuch-Zugang: nutzbar" ohne Token in der `.env` (Session in `keys/cookies.json`). MCP-Handshake von außen: `serverInfo myfitnesspal 1.30.0`. Zwei Funde: `refresh_and_persist()` speichert ein lebendes Token aus `MFP_COOKIE` nicht, wenn `cookies.json` leer ist (einmalig per `bootstrap.py` gelöst); das MCP-SDK wies LAN-Zugriffe mit 421 „Invalid Host header" ab, gelöst über `MFP_ALLOWED_HOSTS` |
 | 2026-09-21 | Frische Cloud-Sitzung nach Umstellung von MFP_COOKIE auf das NAS-Login | OK | Tagebuch-Zugang: nutzbar (Session-Token vorhanden, refresh-token-data fehlt, Verlängerung aus der Cloud daher nicht möglich) |
+| 2026-09-21 | Cloud-Routine „MFP-Keepalive" deaktiviert; NAS hält das gemeinsame Login | OK | Token in `MFP_COOKIE` gesetzt am 2026-09-21 (NAS-Login), Laufzeit bis 2026-10-21 |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
