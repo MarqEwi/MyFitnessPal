@@ -181,6 +181,7 @@ Bei Fehlern: Datum, Endpunkt, HTTP-Status, Meldung.
 | 2026-09-17 | Frische Cloud-Sitzung: MFP_COOKIE aus Umgebung, fitness_get_day + mfp_goals.py | OK (nach Fix) | `fitness_get_day` OK (181 kcal am Tag). `mfp_goals.py` brach zunächst mit „couldn't read your MyFitnessPal profile" ab, weil `MFP_USERNAME` nur dem MCP-Server über `.mcp.json` mitgegeben wird; seit Commit danach setzen alle Skripte den Benutzernamen selbst |
 | 2026-09-20 | Supplement-Stack: 4 eigene Lebensmittel, 4 gespeicherte Mahlzeiten „Supps …" über Zwischenablage 2020-01-01 | OK | Token aus Inkognito-Session; Zwischenablage danach leer |
 | 2026-09-20 | Session-Messung: Rotation entwertet alte Tokens nicht (T0 90 min nach Ausstellung, 80 min nach Rotation nutzbar); reCAPTCHA sperrt Passwort-Login; Keepalive-Routine stündlich eingerichtet. Token in `MFP_COOKIE` gesetzt am 2026-09-20 | OK | Idle-Grenze wird noch gemessen |
+| 2026-09-21 | Neues Token in `MFP_COOKIE` gesetzt (06:47 UTC), Keepalive-Routine sofort von Hand gestartet; 2 Pfirsiche fürs Frühstück eingetragen | OK | Token gesetzt am 2026-09-21; Verifikation der Routine um 08:00 UTC |
 
 Bekannte Fehlerbilder aus den Issues, zur Einordnung eigener Fehler:
 
